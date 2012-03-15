@@ -53,6 +53,7 @@ def symmetry_generator3(ITA_number,b,h):
     t0 = np.zeros(3)
     sI = Symmetry(3,b,h,I,t0)
     # q = 1/4, r = 3/4, s= 1/2, o = 1/8
+    # Rotation
     R300z = np.array([[0.0,-1.0,0.0],[1.0,-1.0,0.0],[0.0,0.0,1.0]])
     R200z = np.array([[-1.0,0.0,0.0],[0.0,-1.0,0.0],[0.0,0.0,1.0]])
     Rmxxz = np.array([[0.0,-1.0,0.0],[-1.0,0.0,0.0],[0.0,0.0,1.0]])
@@ -61,6 +62,7 @@ def symmetry_generator3(ITA_number,b,h):
     R3xxx = np.array([[0.0,0.0,1.0],[1.0,0.0,0.0],[0.0,1.0,0.0]])
     R2xxo = np.array([[0.0,1.0,0.0],[1.0,0.0,0.0],[0.0,0.0,-1.0]])
     R1000 = np.array([[-1.0,0.0,0.0],[0.0,-1.0,0.0],[0.0,0.0,-1.0]])
+    # Translation
     Ts0s = np.array([0.5,0.0,0.5])
     T0ss = np.array([0.0,0.5,0.5])
     Trqq = np.array([0.75,0.25,0.25])

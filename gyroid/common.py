@@ -12,6 +12,8 @@ import numpy as np
 from numpy.linalg import inv
 
 EPS = 1e-10
+SMALL = 1e-10
+LARGE = 1e+10
 BRAVAIS = "Bravais"
 CARTESIAN = "Cartesian"
 

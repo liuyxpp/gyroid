@@ -88,7 +88,6 @@ class Group(object):
             symm = symmetry_generator3(ITA_number,self.type,self.shape)
         # generating group symmetries using generators
         for iterate in range(20):
-            print iterate
             is_group = True
             # Add missing inverses of existing elements to group
             k = len(symm)
