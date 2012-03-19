@@ -75,7 +75,7 @@ def symmetry_generator3(ITA_number,b,h):
                 Symmetry(3,b,h,Rmxxz,t0)
                ]
     if ITA_number == 230:
-        # "P6mm 3D"
+        # "Ia-3d 3D"
         return [sI,
                 Symmetry(3,b,h,R2q0z,Ts0s),
                 Symmetry(3,b,h,R20yq,T0ss),
@@ -86,3 +86,4 @@ def symmetry_generator3(ITA_number,b,h):
                ]
     else:
         raise ValueError("ITA number not supported.")
+

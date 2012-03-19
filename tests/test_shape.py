@@ -13,18 +13,18 @@ from gyroid import Shape
 
 def test_Shape():
     twopi = 2.0*np.pi
-    s1 = Shape(1,[2.0])
+    s1 = Shape(1,np.array([2.0]))
     print s1.h
     print s1.g
     print s1.h*s1.g/twopi
-    s2 = Shape(2,(4.0,1.0),(2.0,3.0))
+    s2 = Shape(2,np.array([4.0,1.0]),np.array([2.0,3.0]))
     print s2.h
     print s2.g
     print "The eye(2) matrix is expected."
     print np.dot(s2.g,s2.h.transpose())/twopi
-    a1 = (4.0,1.0,2.0)
-    a2 = (3.0,4.0,5.0)
-    a3 = (6.0,7.0,8.0)
+    a1 = np.array([4.0,1.0,2.0])
+    a2 = np.array([3.0,4.0,5.0])
+    a3 = np.array([6.0,7.0,8.0])
     s3 = Shape(3,a1,a2,a3)
     print s3.h
     print s3.g

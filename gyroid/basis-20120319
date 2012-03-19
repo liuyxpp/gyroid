@@ -13,7 +13,7 @@ from numpy.linalg import inv
 
 from .common import BRAVAIS,CARTESIAN,EPS
 
-__all__ = ["Basis","Star"]
+__all__ = ["Basis","StarSet","StarAtom"]
 
 class Basis(object):
     """
@@ -29,7 +29,7 @@ class Basis(object):
                 G2_pre = G2
 
 
-class Star(object):
+class StarSet(object):
     """
     A StarSet is a collection of stars with all waves have same magnitude.
     """
@@ -41,12 +41,8 @@ class Star(object):
         self.Gsq = Gsq
         waves = self.__select_waves(grid,Gsq)
         sorted_waves,phases = self.__sort_waves(waves)
-        (self.waves,phases,self.iwaves,iphases) = self.__find_waves_in_star(
-                                                    group,grid,sorted_waves)
-        self.N = np.size(self.waves,1)
-        self.c, self.ic = self.__find_coeff(phases,iphases)
-        if self.iwaves is None:
-            self.sign = self.__set_coeff_for_closed_star(grid)
+        self.__find_waves_in_star(group,grid,sorted_waves)
+        self.N = np.size(self.stars)
 
     def __select_waves(self,grid,G2):
         (ind,) = np.where(np.abs(grid.Gsq-G2)<EPS)
@@ -104,11 +100,10 @@ class Star(object):
         # return np.fliplr(np.fliplr(waves.T.take(ind,axis=-1)).T)
 
     def __calc_phase(self,G,t,basis_type):
-        twopi = 2.0 * np.pi
         if basis_type == BRAVAIS:
-            return twopi * np.round(np.dot(G,t)).astype(type(G[0]))
+            return np.round(np.dot(G,t)).astype(type(G[0]))
         else:
-            return twopi * np.dot(G,t)
+            return np.dot(G,t)
 
     def __calc_wave(self,G,R,basis_type):
         if basis_type == BRAVAIS:
@@ -119,18 +114,18 @@ class Star(object):
     def __form_star(self,G,group,grid,waves):
         star_waves = None
         phases = None
-        for i in np.arange(group.order):
+        for i in np.arange(np.size(waves,1)):
             Gn = self.__calc_wave(G,group.symm[i].R,group.type)
             # Pseudo-Spectral method
             Gn = grid.to_BZ(Gn)
 
-            if index_waves(Gn,waves.T) is not None:
+            if is_in_waves(Gn,waves.T):
                 if star_waves is None:
                     star_waves = np.array([Gn])
                     ph = self.__calc_phase(G,group.symm[i].t,group.type)
                     phases = np.array([ph])
                 else:
-                    if index_waves(Gn,star_waves) is None:
+                    if not is_in_waves(Gn,star_waves):
                         star_waves = np.append(star_waves,[Gn],axis=0)
                         ph = self.__calc_phase(G,group.symm[i].t,group.type)
                         phases = np.append(phases,[ph],axis=0)
@@ -144,34 +139,78 @@ class Star(object):
         stars, or several closed stars.
         """
 
-        G1 = waves[:,0]
-        star_waves, phases = self.__form_star(G1,g,grid,waves)
-        star_waves, phases = self.__sort_waves(star_waves,phases)
-        Gi = -1.0 * G1
-        Gi = grid.to_BZ(Gi)
-        if index_waves(Gi,star_waves.T) is not None:
-            if np.size(waves,1) != np.size(star_waves,1):
-                raise ValueError("Closed star expected.")
-            return star_waves,phases,None,None
-        else:
-            invert_waves, invert_phases = self.__form_star(Gi,g,grid,waves)
-            invert_waves, invert_phases = self.__sort_waves(
+        self.stars = []
+        rw = waves
+        while rw is not None:
+            G1 = rw[:,0]
+            star_waves, phases = self.__form_star(G1,g,grid,rw)
+            star_waves, phases = self.__sort_waves(star_waves,phases)
+            Gi = -1.0 * G1
+            Gi = grid.to_BZ(Gi)
+            if is_in_waves(Gi,star_waves.T):
+                # a closed star
+                print star_waves
+                self.stars.append(StarAtom(grid,star_waves,phases))
+                if np.size(rw,1) == np.size(star_waves,1):
+                    return
+                tw = np.zeros((self.dim,0))
+                for w in rw.T:
+                    print w
+                    if not is_in_waves(w,star_waves.T):
+                        print "ok"
+                        tw = np.append(tw,np.array([w]).T,axis=1)
+                rw = tw
+            else:
+                invert_waves, invert_phases = self.__form_star(
+                                                    G1i,g,grid,rw)
+                invert_waves, invert_phases = self.__sort_waves(
                                             invert_waves,invert_phases)
-            l1 = np.size(star_waves,1)
-            l2 = np.size(invert_waves,1)
-            if np.size(waves,1) != (l1 + l2) or l1 != l2:
-                raise ValueError("Open star pair expected.")
-            return star_waves,phases,invert_waves,invert_phases
+                self.stars.append(StarAtom(
+                    grid,star_waves,phases,invert_waves,invert_phases))
+                if np.size(rw,1) == np.size(star_waves,1) + np.size(
+                                                        invert_waves,1):
+                    return
+                tw = np.zeros((self.dim,0))
+                for w in rw.T:
+                    if not is_in_waves(w,star_waves.T) and not is_in_waves(
+                                                        w,invert_waves.T):
+                        tw = np.append(tw,np.array([w]).T,axis=1)
+                rw = tw
+
+
+class StarAtom(object):
+    """
+    A StarAtom is a star or an open star pair.
+    """
+
+    def __init__(self,grid,waves,phases,iwaves=None,iphases=None):
+        self.N = np.size(waves,1)
+        if iwaves is not None:
+            if iphases is None:
+                raise ValueError(
+                    "Coefficients expected for inverted star.")
+            if np.size(waves,1) != self.N:
+                raise ValueError(
+                    "No. Waves in star and inverted star not match.")
+        else:
+            if iphases is not None:
+                raise ValueError(
+                    "Waves expected for inverted coefficients.")
+        self.waves = waves
+        self.iwaves = iwaves
+        self.c, self.ic = self.__find_coeff(phases,iphases)
+        if self.iwaves is None:
+            self.__set_coeff_for_closed_star(grid)
 
     def __find_coeff(self,phases,iphases):
         if iphases is None:
             # c_norm = exp(i*phi)
-            c_norm = np.exp(complex(0.0,phases[0])) * np.sqrt(self.N)
+            c_norm = np.exp(complex(0.0,phases[0]))
             return ([np.exp(complex(0.0,phases[i]))/c_norm
                     for i in np.arange(self.N)], None)
         else:
-            c_norm = np.exp(complex(0.0,phases[0])) * np.sqrt(self.N)
-            ic_norm = np.exp(complex(0.0,phases[self.N-1]))*np.sqrt(self.N)
+            c_norm = np.exp(complex(0.0,phases[0]))
+            ic_norm = np.exp(complex(0.0,phases[self.N-1]))
             return ([np.exp(complex(0.0,phases[i]))/c_norm
                     for i in np.arange(self.N)],
                     [np.exp(complex(0.0,iphases[i]))/ic_norm
@@ -186,7 +225,15 @@ class Star(object):
         Gi = -1.0 * G
         Gi = grid.to_BZ(Gi)
         # find index of Gi in the star
-        i = index_waves(Gi,self.waves.T)
+        i = 0
+        for gg in self.waves.T:
+            if np.all(np.abs(Gi-gg) < EPS):
+                break
+            i += 1
+        if i != self.N - 1:
+            raise ValueError("""-G1 must be the last wave
+                             in an ordered closed star if G1
+                             is the first wave in the star.""")
 
         c, ci = self.c[0], self.c[i]
         if np.abs(c.imag) < EPS:
@@ -208,21 +255,17 @@ class Star(object):
         else:
             raise ValueError("""Closed star is neither cosine-like nor
                              sine-like.""")
-        # for inversion star pairs, the first star's sign is +1
-        # the second is -1
 
 
-def index_waves(w,waves):
+def is_in_waves(w,waves):
     """
     w is a row vector.
     waves is a 2D array, each row is a row vector.
     """
     if np.size(w) != np.size(waves,1):
-        return None
-    i = 0
+        return False
     for ww in waves:
         if np.all(np.abs(ww-w) < EPS):
-            return i
-        i += 1
-    return None
+            return True
+    return False
 

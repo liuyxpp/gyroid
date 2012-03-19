@@ -26,3 +26,4 @@ from .symmetry import *
 from .space_group import *
 from .group import *
 from .grid import *
+from .basis import *

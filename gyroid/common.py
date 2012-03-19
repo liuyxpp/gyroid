@@ -14,8 +14,26 @@ from numpy.linalg import inv
 EPS = 1e-10
 SMALL = 1e-10
 LARGE = 1e+10
+
 BRAVAIS = "Bravais"
 CARTESIAN = "Cartesian"
+
+LAMELLAR = "Lamellar"
+SQUARE = "Square"
+RECTANGULAR = "Rectangular"
+HEXAGONAL = "Hexagonal"
+OBLIQUE = "Oblique"
+CUBIC = "Cubic"
+TETRAGONAL = "Tetragonal"
+ORTHORHOMBIC = "Orthorhombic"
+TRIGONAL = "Trigonal"
+MONOCLINIC = "Monoclinic"
+TRICLINIC = "Triclinic"
+DEFAULT = "Default"
+CRYSTAL_SYSTEM1 = [LAMELLAR,DEFAULT]
+CRYSTAL_SYSTEM2 = [SQUARE,RECTANGULAR,HEXAGONAL,OBLIQUE,DEFAULT]
+CRYSTAL_SYSTEM3 = [CUBIC,TETRAGONAL,ORTHORHOMBIC,HEXAGONAL,
+                   TRIGONAL,MONOCLINIC,TRICLINIC,DEFAULT]
 
 HM_ITA_TABLE1 = ["P1","P-1"]
 HM_ITA_TABLE2 = ["P1","P2","Pm","Pg","Cm",

@@ -164,7 +164,7 @@ class Grid(object):
             n = 0
             for (i,j,k) in np.ndindex(self.N[0],self.N[1],self.N[2]):
                 ivec = self.to_BZ(np.array([i,j,k]))
-                if not g.is_wave_cancel(ivec):
+                if not self.is_wave_cancel(ivec,g):
                     n += 1
             Nw = n
             w = np.zeros((self.dim,Nw))
@@ -172,7 +172,7 @@ class Grid(object):
             n = 0
             for (i,j,k) in np.ndindex(self.N[0],self.N[1],self.N[2]):
                 ivec = self.to_BZ(np.array([i,j,k]))
-                if not g.is_wave_cancel(ivec):
+                if not self.is_wave_cancel(ivec,g):
                     w[:,n] = ivec
                     G2[n] = wave_norm(ivec,self.shape)
                     n += 1
