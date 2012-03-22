@@ -208,6 +208,11 @@ class Shape(object):
             raise ValueError("Unrecognized basis type when shift a vector.")
 
     @property
+    def l(self):
+        """ return (|a1|,|a2|,|a3|), the length vector. """
+        return np.sqrt(np.sum(self.m**2,axis=1))
+
+    @property
     def h(self):
         """ The shape matrix in Real Space. """
         return self.m

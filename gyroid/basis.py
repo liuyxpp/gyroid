@@ -19,14 +19,48 @@ class Basis(object):
     """
     """
     def __init__(self,group,grid):
+        self.dim = group.dim
+        self.shape = group.shape
         self.stars = []
         self.N = 0
         G2_pre = grid.Gsq[0] # Previous G2
         for G2 in grid.Gsq:
             if np.abs(G2-G2_pre) > EPS:
-                self.stars.append(Star(group,grid,G2_pre))
-                self.N += 1
+                s = Star(group,grid,G2_pre)
+                self.stars.append(s)
+                if s.iwaves is None:
+                    self.N += 1
+                else:
+                    self.N += 2
                 G2_pre = G2
+
+    def generate_structure(self,real_grid,c):
+        """
+        real_grid is a tuple contains the discrete numbers for a, b, and c unit vectors in real space.
+        c is an array contains the coefficients for each basis.
+        """
+        if np.size(real_grid) != self.dim:
+            raise ValueError("Dimension not match when generating struct.")
+        if np.size(c) == 1:
+           cc = c
+           c = np.zeros(self.N)
+           c = cc
+        elif np.size(c) != self.N:
+            raise ValueError("No. of Bases and coefficients not match when generating structure.")
+
+        struct = np.zeros(real_grid)
+        for ind,v in np.ndenumerate(struct):
+            # numpy.ndarray can divide tuple
+            x = ind * self.shape.l / real_grid
+            i = 0
+            for s in self.stars:
+                f1,f2 = s.f(x,self.shape)
+                struct[ind] += f1
+                i += 1
+                if f2 is not None:
+                    struct[ind] += f2
+                    i += 1
+        return struct
 
 
 class Star(object):
@@ -47,6 +81,30 @@ class Star(object):
         self.c, self.ic = self.__find_coeff(phases,iphases)
         if self.iwaves is None:
             self.sign = self.__set_coeff_for_closed_star(grid)
+
+    def f(self,x,shape):
+        """
+        the value of basis function f(r) at position r.
+        r is a Bravais type real space vector.
+        """
+        if self.iwaves is None:
+            f1 = self.__f(self.waves,self.c,x,shape)
+            return (f1.real,None)
+        else:
+            v1 = self.__f(self.waves,self.c,x,shape)
+            v2 = self.__f(self.iwaves,self.ic,x,shape)
+            f1 = (v1 + v2) / np.sqrt(2.0)
+            f2 = complex(0.0,1.0) * (v1 - v2) / np.sqrt(2.0)
+            return (f1.real,f2.real)
+
+    def __f(self,waves,c,x,shape):
+        f = 0
+        i = 0
+        for G in waves.T:
+            gr = np.dot(np.dot(G,shape.g),np.dot(x,shape.h))
+            f += c[i] * np.exp(complex(0.0,1.0) * gr)
+            i += 1
+        return f
 
     def __select_waves(self,grid,G2):
         (ind,) = np.where(np.abs(grid.Gsq-G2)<EPS)
