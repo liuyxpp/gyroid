@@ -3,9 +3,6 @@
 gyroid.grid
 ===============
 
-:copyright: (c) 2012 by Yi-Xin Liu
-:license: BSD, see LICENSE for more details.
-
 """
 
 import numpy as np

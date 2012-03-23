@@ -6,4 +6,4 @@ Here you can see the full list of changes between each gyroid release.
 Version 0.1
 -----------
 
-To be released.
+Released at 2012.3.23.

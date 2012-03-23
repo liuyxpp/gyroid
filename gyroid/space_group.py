@@ -3,9 +3,6 @@
 gyroid.space_group
 ===============
 
-:copyright: (c) 2012 by Yi-Xin Liu
-:license: BSD, see LICENSE for more details.
-
 """
 
 import numpy as np
@@ -32,6 +29,25 @@ def symmetry_generator1(ITA_number,b,h):
         raise ValueError("ITA number is not 1D.")
 
 def symmetry_generator2(ITA_number,b,h):
+    """
+    There are 17 2D space groups.
+    Currently, Only following 2D space groups are supported:
+        [17]
+
+    Variable
+    --------
+        ITA_number  -   a sequential number as given in the 
+                        International Tables for Crystallography, 
+                        Vol. A
+        b           -   Basis type
+        h           -   Shape instance that describes the unit cell
+
+    Output
+    ------
+        A list of Symmetry instances that contains the minimun number of
+        symmetries which can be further expanded to the full set of point 
+        group symmetries.
+    """
     I = np.eye(2)
     t0 = np.zeros(2)
     sI = Symmetry(2,b,h,I,t0)

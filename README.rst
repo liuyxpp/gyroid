@@ -27,7 +27,13 @@ or
 ::
 
     >>>import gyroid as gy
-    >>>gy.make_basis("p6mm")
+
+    >>>uc = gy.UnitCell(3)
+    >>>group = gy.Group(3,gy.BRAVAIS,uc.shape,"Ia-3d")
+    >>>grid = gy.Grid(np.array([4,4,4]),group)
+    >>>basis = gy.Basis(group,grid)
+
+    >>>render_structure_3d(basis,32,32,32,1.0)
 
 Ask for Help
 ------------

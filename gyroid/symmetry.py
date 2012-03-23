@@ -3,9 +3,6 @@
 gyroid.symmetry
 ===============
 
-:copyright: (c) 2012 by Yi-Xin Liu
-:license: BSD, see LICENSE for more details.
-
 """
 
 import numpy as np
@@ -21,7 +18,7 @@ class Symmetry(object):
     A representation of a symmetry element in a group.
 
     The basis type of a symmetry element should be either 'Cartesian' or 'Bravais'.
-    A symmetry element contains a point group matrix and a translation vector.
+    A symmetry element contains a point group matrix and a translational vector.
 
     """
 

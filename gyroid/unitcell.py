@@ -3,9 +3,7 @@
 gyroid.unitcell
 ===============
 
-:copyright: (c) 2012 by Yi-Xin Liu
-:license: BSD, see LICENSE for more details.
-
+Define a standard unit cell and its (real space) lattice basis vectors according to the cystal system.
 """
 
 import numpy as np
@@ -26,7 +24,7 @@ class UnitCell(object):
 
     def __init__(self,dim,cell_type=DEFAULT,cell_param=None):
         """
-        if cell_type is missing, cell_param has no effect!
+        If cell_type is missing, cell_param has no effect!
         """
         self.dim = dim
         if dim == 1:

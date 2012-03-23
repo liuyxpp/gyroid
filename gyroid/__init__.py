@@ -3,27 +3,28 @@
 gyroid
 ======
 
+**gyroid** is a python package that generates *symmetry adapted basis functions* based on the space group of a unit cell.
+
 References
 ----------
 
-* Jian Qin, PhD Thesis, advisor: D. C. Morse, 2009
-* A. Ranjan, PhD Thesis, advisor: D. C. Morse, 2007
-* A. C. Tyler, PhD Thesis, advisor: D. C. Morse, 2004
+* Qin, J., PhD Thesis, advisor: D. C. Morse, 2009
+* Ranjan, A., PhD Thesis, advisor: D. C. Morse, 2007
+* Tyler, C. A., PhD Thesis, advisor: D. C. Morse, 2004
 * Tyler, C. A.; Morse, D. C. Macromolecules, 2003, 36, 3764
-
-:copyright: (c) 2012 by Yi-Xin Liu
-:license: BSD, see LICENSE for more details.
 
 """
 
 __author__ = "Yi-Xin Liu <liuyxpp@gmail.com>"
 __license__ = "BSD License"
-__version__ = "Pre-Alpha"
+__version__ = "0.1"
 
 from .common import *
+from .util import *
 from .unitcell import *
 from .symmetry import *
 from .space_group import *
 from .group import *
 from .grid import *
 from .basis import *
+
