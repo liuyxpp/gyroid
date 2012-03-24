@@ -191,6 +191,8 @@ class Shape(object):
         else:
             raise ValueError(
                 "Dimension and the number of unit vector not match")
+        self.gg = 2.0 * np.pi * inv(self.m).T
+        self.ll = np.sqrt(np.sum(self.m**2,axis=1))
 
     def shift(self,t,basis_type):
         """
@@ -208,7 +210,7 @@ class Shape(object):
     @property
     def l(self):
         """ return (|a1|,|a2|,|a3|), the length vector. """
-        return np.sqrt(np.sum(self.m**2,axis=1))
+        return self.ll
 
     @property
     def h(self):
@@ -218,6 +220,6 @@ class Shape(object):
     @property
     def g(self):
         """ The shape matrix in Reciprocal Space. """
-        return 2.0 * np.pi * inv(self.m).T
+        return self.gg
 
 

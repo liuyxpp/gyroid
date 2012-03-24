@@ -62,7 +62,7 @@ class Basis(object):
 
 class Star(object):
     """
-    A StarSet is a collection of stars with all waves have same magnitude.
+    A Star is a collection of stars with all waves have same magnitude.
     """
 
     def __init__(self,group,grid,Gsq):
@@ -177,7 +177,7 @@ class Star(object):
         for i in np.arange(group.order):
             Gn = self.__calc_wave(G,group.symm[i].R,group.type)
             # Pseudo-Spectral method
-            Gn = grid.to_BZ(Gn)
+            Gn,Gn2 = grid.to_BZ(Gn)
 
             if index_waves(Gn,waves.T) is not None:
                 if star_waves is None:
@@ -203,7 +203,7 @@ class Star(object):
         star_waves, phases = self.__form_star(G1,g,grid,waves)
         star_waves, phases = self.__sort_waves(star_waves,phases)
         Gi = -1.0 * G1
-        Gi = grid.to_BZ(Gi)
+        Gi,Gi2 = grid.to_BZ(Gi)
         if index_waves(Gi,star_waves.T) is not None:
             if np.size(waves,1) != np.size(star_waves,1):
                 raise ValueError("Closed star expected.")
@@ -239,7 +239,7 @@ class Star(object):
         """
         G = self.waves[:,0]
         Gi = -1.0 * G
-        Gi = grid.to_BZ(Gi)
+        Gi,Gi2 = grid.to_BZ(Gi)
         # find index of Gi in the star
         i = index_waves(Gi,self.waves.T)
 

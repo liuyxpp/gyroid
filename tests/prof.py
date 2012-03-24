@@ -43,14 +43,15 @@ def test_Basis2():
     b = "Bravais"
     N1,N2 = 64,64
 
-    uc = UnitCell(2,HEXAGONAL,np.array([2.0]))
-    g1 = Group(2,b,uc.shape,"P6mm")
-    gd1 = Grid(np.array([8,8]),g1)
-    bs = Basis(g1,gd1)
-    print bs.__dict__
-    for s in bs.stars:
-        print s.__dict__
-    render_structure_2d(bs,N1,N2,1.0)
+    for i in np.arange(100):
+        uc = UnitCell(2,HEXAGONAL,np.array([2.0]))
+        g1 = Group(2,b,uc.shape,"P6mm")
+        gd1 = Grid(np.array([8,8]),g1)
+        bs = Basis(g1,gd1)
+#    print bs.__dict__
+#    for s in bs.stars:
+#        print s.__dict__
+#    render_structure_2d(bs,N1,N2,1.0)
 
 def test_Basis3():
     b = "Bravais"

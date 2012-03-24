@@ -62,15 +62,15 @@ setup(
     author='Yi-Xin Liu',
     author_email='liuyxpp@gmail.com',
     url='https://bitbucket.org/liuyxpp/gyroid',
-    packages=['gyroid','tests','docs'],
+    packages=['gyroid'],
     include_package_data=True,
     zip_safe=False,
     long_description=__doc__,
     platform='linux',
     install_requires=[
-        'numpy>=1.6.0',
+        'numpy',
+        'scipy',
         'matplotlib>=1.0.1',
-        'mayavi>=4.1.0'
     ],
     classifiers=[
         'Development Status :: 4 - Beta',

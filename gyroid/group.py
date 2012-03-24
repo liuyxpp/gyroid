@@ -97,7 +97,8 @@ class Group(object):
             cayley = CayleyTable(symm)
             k = len(symm)
             for (i,j) in np.ndindex(k,k):
-                if (cayley.index[i,j] == -1) and (cayley.table[i][j] not in symm):
+                #if (cayley.index[i,j] == -1) and (cayley.table[i][j] not in symm):
+                if cayley.table[i][j] not in symm:
                     symm.append(cayley.table[i][j])
                     is_group = False
             # No more symmetry element is added before end of iteration.
@@ -133,9 +134,9 @@ class CayleyTable(object):
                      for j in range(self.order)]
         # Find index for symmetry element table(i,j) in symm
         # If symmetry element (i,j) is not in symm, then index(i,j)=-1
-        self.index = np.zeros((self.order,self.order)) - 1
-        for (i,j) in np.ndindex(self.order,self.order):
-                if self.table[i][j] in symm:
-                    self.index[i,j] = symm.index(self.table[i][j])
+#        self.index = np.zeros((self.order,self.order)) - 1
+#        for (i,j) in np.ndindex(self.order,self.order):
+#                if self.table[i][j] in symm:
+#                    self.index[i,j] = symm.index(self.table[i][j])
 
 
