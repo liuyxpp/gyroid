@@ -3,7 +3,15 @@ gyroid Changelog
 
 Here you can see the full list of changes between each gyroid release.
 
+Version 0.2
+-----------
+
+* Made several optimizations. Speedup x 10+. 
+* Fix a serious bug in Basis. This bug will lead to generate stars failed when there are more than one closed stars or an open star pairs for a certain magnitude of the wave vector.
+* Fix a bug in Basis.generate_sturcture which leads to wrong period.
+
+
 Version 0.1
 -----------
 
-Released at 2012.3.23.
+* Released at 2012.3.23.

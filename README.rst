@@ -50,6 +50,7 @@ Ask for Help
 Links
 -----
 
+* `Documentation <http://packages.python.org/gyroid>`_
 * `Website <http://liuyxpp.bitbucket.org>`_
 * `Development version <http://bitbucket.org/liuyxpp/gyroid/>`_
 

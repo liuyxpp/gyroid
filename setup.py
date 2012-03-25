@@ -56,7 +56,7 @@ except ImportError:
 
 setup(
     name='gyroid',
-    version='0.1',
+    version='0.2',
     license='BSD',
     description='A symmetry adapted basis function (SABF) generator.',
     author='Yi-Xin Liu',
