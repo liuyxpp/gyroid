@@ -13,7 +13,7 @@ import numpy as np
 #import matplotlib.pyplot as plt
 #from mayavi import mlab
 
-from gyroid import UnitCell,Group,Grid,Star,Basis
+from gyroid import UnitCell,Group,Grid,Basis
 from gyroid.common import *
 from gyroid import render_structure_1d
 from gyroid import render_structure_2d
@@ -45,7 +45,7 @@ def test_Basis2():
 
     uc = UnitCell(2,HEXAGONAL,np.array([2.0]))
     g1 = Group(2,b,uc.shape,"P6mm")
-    gd1 = Grid(np.array([8,8]),g1)
+    gd1 = Grid(np.array([32,32]),g1)
     bs = Basis(g1,gd1)
     print bs.__dict__
     for s in bs.stars:
@@ -70,13 +70,12 @@ def test_Basis3():
     g2 = Group(3,b,uc.shape,"Ia-3d")
     gd2 = Grid(np.array([5,5,5]),g2)
     bs2 = Basis(g2,gd2)
-    render_structure_3d(bs2,N1,N2,N3,1.0)
     print bs2.__dict__
     for s in bs2.stars:
         print s.__dict__
+    render_structure_3d(bs2,N1,N2,N3,1.0)
 
 def run_test():
-    import cProfile
     #test_Basis1()
     test_Basis2()
     #test_Basis3()

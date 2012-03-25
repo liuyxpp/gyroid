@@ -43,27 +43,27 @@ class Grid(object):
 
         if self.dim == 1:
             (i,) = G
-            k = (i,)
-            if not self.BZmap.has_key(k):
+            key = (i,)
+            if not self.BZmap.has_key(key):
                 ivec,ivec2 = self.__find_G_in_BZ(G)
-                self.BZmap[k] = (ivec,ivec2)
-            return self.BZmap[k]
+                self.BZmap[key] = (ivec,ivec2)
+            return self.BZmap[key]
 
         if self.dim == 2:
             (i,j) = G
-            k = (i,j)
-            if not self.BZmap.has_key(k):
+            key = (i,j)
+            if not self.BZmap.has_key(key):
                 ivec,ivec2 = self.__find_G_in_BZ(G)
-                self.BZmap[k] = (ivec,ivec2)
-            return self.BZmap[k]
+                self.BZmap[key] = (ivec,ivec2)
+            return self.BZmap[key]
 
         if self.dim == 3:
             (i,j,k) = G
-            k = (i,j,k)
-            if self.BZmap.has_key(k):
+            key = (i,j,k)
+            if not self.BZmap.has_key(key):
                 ivec,ivec2 = self.__find_G_in_BZ(G)
-                self.BZmap[k] = (ivec,ivec2)
-            return self.BZmap[k]
+                self.BZmap[key] = (ivec,ivec2)
+            return self.BZmap[key]
 
     def is_wave_cancel(self,G,g):
         """

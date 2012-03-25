@@ -202,7 +202,7 @@ class Shape(object):
         if basis_type == BRAVAIS:
             return t % 1.0
         elif basis_type == CARTESIAN:
-            cc = np.dot(self.g,t) / (2.0 * np.pi)
+            cc = np.dot(t,self.g) / (2.0 * np.pi)
             return np.dot(self.h, cc % 1.0)
         else:
             raise ValueError("Unrecognized basis type when shift a vector.")

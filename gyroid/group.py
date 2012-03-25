@@ -83,7 +83,9 @@ class Group(object):
             symm = symmetry_generator2(ITA_number,self.type,self.shape)
         if self.dim == 3:
             symm = symmetry_generator3(ITA_number,self.type,self.shape)
+
         # generating group symmetries using generators
+        cayley = CayleyTable(symm)
         for iterate in range(20):
             is_group = True
             # Add missing inverses of existing elements to group
@@ -94,7 +96,7 @@ class Group(object):
                     symm.append(isymm)
                     is_group = False
             # Add products of existing elements to group
-            cayley = CayleyTable(symm)
+            cayley.update(symm)
             k = len(symm)
             for (i,j) in np.ndindex(k,k):
                 #if (cayley.index[i,j] == -1) and (cayley.table[i][j] not in symm):
@@ -126,17 +128,38 @@ class CayleyTable(object):
     Make a full Cayley table from a group.
     """
 
-    def __init__(self,symm):
-        self.order = len(symm)
+    def __init__(self,symm=None):
         # create a self.order x self.order table
         # NOTE: table is not an numpy ndarray!
-        self.table = [[symm[i]*symm[j] for i in range(self.order)]
-                     for j in range(self.order)]
+        if symm is None:
+            self.table = [[]]
+        else:
+            self.order = len(symm)
+            self.table = [[symm[i]*symm[j] for i in range(self.order)]
+                                           for j in range(self.order)]
         # Find index for symmetry element table(i,j) in symm
         # If symmetry element (i,j) is not in symm, then index(i,j)=-1
 #        self.index = np.zeros((self.order,self.order)) - 1
 #        for (i,j) in np.ndindex(self.order,self.order):
 #                if self.table[i][j] in symm:
 #                    self.index[i,j] = symm.index(self.table[i][j])
+
+    def update(self,symm):
+        """
+        Currently, only len(symm) > self.order is supported.
+        """
+
+        l0 = self.order
+        l1 = len(symm)
+        if l1 <= l0:
+            return
+
+        # Extend original rows
+        for i in range(l0):
+            self.table[i].extend([symm[i]*symm[j] for j in range(l0,l1)])
+        # Add additional rows
+        self.table.extend([[symm[i]*symm[j] for j in range(l1)]
+                                            for i in range(l0,l1)])
+        self.order = l1
 
 

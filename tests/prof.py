@@ -71,16 +71,15 @@ def test_Basis3():
     g2 = Group(3,b,uc.shape,"Ia-3d")
     gd2 = Grid(np.array([5,5,5]),g2)
     bs2 = Basis(g2,gd2)
-    render_structure_3d(bs2,N1,N2,N3,1.0)
-    print bs2.__dict__
-    for s in bs2.stars:
-        print s.__dict__
+#    render_structure_3d(bs2,N1,N2,N3,1.0)
+#    print bs2.__dict__
+#    for s in bs2.stars:
+#        print s.__dict__
 
 def run_test():
-    import cProfile
     #test_Basis1()
-    test_Basis2()
-    #test_Basis3()
+    #test_Basis2()
+    test_Basis3()
 
 if __name__ == '__main__':
     run_test()
