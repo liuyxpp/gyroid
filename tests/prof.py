@@ -13,7 +13,7 @@ import numpy as np
 #import matplotlib.pyplot as plt
 #from mayavi import mlab
 
-from gyroid import UnitCell,Group,Grid,Star,Basis
+from gyroid import UnitCell,Group,Grid,Basis
 from gyroid.common import *
 from gyroid import render_structure_1d
 from gyroid import render_structure_2d
@@ -43,7 +43,7 @@ def test_Basis2():
     b = "Bravais"
     N1,N2 = 64,64
 
-    for i in np.arange(100):
+    for i in np.arange(10):
         uc = UnitCell(2,HEXAGONAL,np.array([2.0]))
         g1 = Group(2,b,uc.shape,"P6mm")
         gd1 = Grid(np.array([8,8]),g1)
@@ -51,7 +51,8 @@ def test_Basis2():
 #    print bs.__dict__
 #    for s in bs.stars:
 #        print s.__dict__
-#    render_structure_2d(bs,N1,N2,1.0)
+        render_structure_2d(bs,N1,N2,1.0,
+                            save_img=False,show_img=False,save_data=False)
 
 def test_Basis3():
     b = "Bravais"
@@ -78,8 +79,8 @@ def test_Basis3():
 
 def run_test():
     #test_Basis1()
-    #test_Basis2()
-    test_Basis3()
+    test_Basis2()
+    #test_Basis3()
 
 if __name__ == '__main__':
     run_test()

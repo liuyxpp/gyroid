@@ -38,7 +38,7 @@ def render_structure_1d(basis,Na,c,
         plt.show()
     return rx,struct
 
-def render_structure_2d(basis,Na,Nb,c,
+def render_structure_2d(basis,grid,Na,Nb,c,
                         save_data=True,data_name="struct2d.mat",
                         save_img=True,show_img=True,
                         img_name="struct2d.png",
@@ -50,7 +50,9 @@ def render_structure_2d(basis,Na,Nb,c,
     c     - coefficients for each basis function.
     """
 
-    struct = basis.generate_structure((Na,Nb),c)
+    #struct = basis.generate_structure((Na,Nb),c)
+    struct = basis.generate_structure_by_fft((Na,Nb),c,grid)
+    print basis.fft2sabf(np.fft.fft2(struct),grid)
     rx = np.zeros((Na,Nb))
     ry = np.zeros((Na,Nb))
     for (i,j) in np.ndindex(Na,Nb):
@@ -84,6 +86,7 @@ def render_structure_2d(basis,Na,Nb,c,
         # actual plot
         ax.contourf(rx,ry,struct,levels=levels,
                     cmap=cmap,antialiased=False,**kwargs)
+        #ax.contourf(rx,ry,struct)
     if save_img:
         plt.savefig(img_name)
     if show_img:

@@ -23,9 +23,9 @@ or
 
 Required packages:
 * numpy: it should be installed before installing gyroid.
-* scipy: I use it to save data in Matlab mat format.
+* scipy: use it to save data in Matlab mat format.
 * matplotlib: 2D Graphic plotting.
-* mayavi: it depends on many packages, e.g. VTK (compiled with python wrapper and shared library on). If you do not need the render_structure_3d function, simply ignore it.
+* mayavi: it depends on many packages, e.g. VTK (compiled with python wrapper and shared library on). If you do not need the render_structure_3d functionality, simply ignore it.
 
 2. Usage
 ^^^^^^^^
@@ -33,6 +33,7 @@ Required packages:
 ::
 
     >>>import gyroid as gy
+    >>>import numpy as np
 
     >>>uc = gy.UnitCell(3)
     >>>group = gy.Group(3,gy.BRAVAIS,uc.shape,"Ia-3d")

@@ -17,7 +17,7 @@ References
 
 __author__ = "Yi-Xin Liu <liuyxpp@gmail.com>"
 __license__ = "BSD License"
-__version__ = "0.1"
+__version__ = "0.2"
 
 from .common import *
 from .util import *

@@ -22,6 +22,12 @@ or
     $ cd gyroid-xxx
     $ python setup.py install
 
+Required packages:
+* numpy: it should be installed before installing gyroid.
+* scipy: use it to save data in Matlab mat format.
+* matplotlib: 2D Graphic plotting.
+* mayavi: it depends on many packages, e.g. VTK (compiled with python wrapper and shared library on). If you do not need the render_structure_3d functionality, simply ignore it.
+
 2. Usage
 ^^^^^^^^
 
@@ -45,6 +51,7 @@ Ask for Help
 Links
 -----
 
+* `Documentation <http://packages.python.org/gyroid>`_
 * `Website <http://liuyxpp.bitbucket.org>`_
 * `Development version <http://bitbucket.org/liuyxpp/gyroid/>`_
 

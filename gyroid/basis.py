@@ -42,7 +42,7 @@ class Basis(object):
         if np.size(c) == 1:
            cc = c
            c = np.zeros(self.N)
-           c = cc
+           c.fill(cc)
         elif np.size(c) != self.N:
             raise ValueError("No. of Bases and coefficients not match when generating structure.")
 
@@ -53,13 +53,94 @@ class Basis(object):
             x = 1.0 * np.array(ind) / real_grid
             i = 0
             for s in self.stars:
-                f1,f2 = s.f(x,self.shape)
+                if s.iwaves is None:
+                    f1,f2 = s.f(x,self.shape,c[i],c[i])
+                else:
+                    f1,f2 = s.f(x,self.shape,c[i],c[i+1])
                 struct[ind] += f1
                 i += 1
                 if f2 is not None:
                     struct[ind] += f2
                     i += 1
-        return struct
+        vol = np.dot(struct.shape,struct.shape)
+        return struct/vol
+
+    def generate_structure_by_fft(self,real_grid,c,grid):
+        if np.size(real_grid) != self.dim:
+            raise ValueError("Dimension not match when generating struct.")
+        if np.size(c) == 1:
+           cc = c
+           c = np.zeros(self.N)
+           c.fill(cc)
+        elif np.size(c) != self.N:
+            raise ValueError("No. of Bases and coefficients not match when generating structure.")
+
+        c_fft = self.sabf2fft(c,real_grid,grid)
+        return np.fft.ifft2(c_fft).real
+
+    def sabf2fft(self,c,fft_grid,grid):
+        """
+        c           - is a list of coefficients for SABF.
+        fft_grid    - tuple with discretized number for each side.
+        """
+
+        if np.size(c) != self.N:
+            raise ValueError("No. of input coefficients != No. of stars.")
+        if np.size(fft_grid) != self.dim:
+            raise ValueError("Dimension not match in sabf2fft.")
+
+        sqr2 = np.sqrt(2.0)
+        c_fft = np.zeros(fft_grid).astype(complex)
+        for ind in np.ndindex(fft_grid):
+            G = np.array(ind)
+            G,G2 = grid.to_BZ(G)
+            i, iw, flag = index_stars(G,self.stars)
+            if i is not None:
+                if flag == 0:
+                    if self.stars[i].iwaves is None:
+                        c_fft[ind] = self.stars[i].c[iw] * c[i]
+                    else:
+                        c_fft[ind] = self.stars[i].c[iw] * (complex(
+                                                c[i],-c[i+1]) / sqr2)
+                else:
+                    c_fft[ind] = self.stars[i].ic[iw] * (complex(
+                                                c[i-1],c[i]) / sqr2)
+        return c_fft
+
+    def fft2sabf(self,c_fft,grid):
+        if np.ndim(c_fft) != self.dim:
+            raise ValueError("Dimension not match in sabf2fft.")
+
+        fft_grid = np.shape(c_fft)
+        sqr2 = np.sqrt(2.0)
+        c = np.zeros(self.N)
+        i = 0
+        for s in self.stars:
+            G = s.waves.T[0]
+            if G[0] > fft_grid[0]/2:
+                G = (-G) % fft_grid
+                ind = tuple(G.astype(int))
+                z = c_fft[ind].conjugate()
+            else:
+                ind = tuple(G.astype(int))
+                z = c_fft[ind]
+
+            if s.iwaves is None:
+                c[i] = (z/s.c[0]).real
+                i += 1
+            else:
+                c[i] = sqr2 * (z/s.c[0]).real
+                Gi = s.iwaves.T[s.N-1]
+                if Gi[0] > fft_grid[0]/2:
+                    Gi = (-Gi) % fft_grid
+                    ind = tuple(Gi.astype(int))
+                    z = c_fft[ind].conjugate()
+                else:
+                    ind = tuple(Gi.astype(int))
+                    z = c_fft[ind]
+                c[i+1] = sqr2 * (z/s.ic[s.N-1]).real
+                i += 2
+        return c
 
 
 class StarSet(object):
@@ -69,7 +150,7 @@ class StarSet(object):
     collection of star with same magnitude is:
         [[ 8  8 7  7 5  5 3  3 0  0 -3 -3 -5 -5 -7 -7 -8 -8],
          [-3 -5 0 -7 3 -8 5 -8 7 -7  8 -5  8 -3  7  0  5  3]]
-    It has two stars:
+    It has two *closed* stars:
         [[ 8  8 5  5 3  3 -3 -3 -5 -5 -8 -8],
          [-3 -5 3 -8 5 -8  8 -5  8 -3  5  3]]
     and
@@ -249,20 +330,22 @@ class StarAtom(object):
         if self.iwaves is None:
             self.__set_coeff_for_closed_star(grid)
 
-    def f(self,x,shape):
+    def f(self,x,shape,c1,c2):
         """
         the value of basis function f(r) at position r.
-        r is a Bravais type real space vector.
+        x   - a Bravais type real space vector.
+        c1  - the coefficient for waves
+        c2  - the coefficient for iwaves
         """
         if self.iwaves is None:
             f1 = self.__f(self.waves,self.c,x,shape)
-            return (f1.real,None)
+            return (c1*f1.real,None)
         else:
             v1 = self.__f(self.waves,self.c,x,shape)
             v2 = self.__f(self.iwaves,self.ic,x,shape)
             f1 = (v1 + v2) / np.sqrt(2.0)
             f2 = complex(0.0,1.0) * (v1 - v2) / np.sqrt(2.0)
-            return (f1.real,f2.real)
+            return (c1*f1.real,c2*f2.real)
 
     def __f(self,waves,c,x,shape):
         f = 0
@@ -321,18 +404,36 @@ class StarAtom(object):
             raise ValueError("""Closed star is neither cosine-like nor
                              sine-like.""")
 
-
 def index_waves(w,waves):
     """
     w is a row vector.
     waves is a 2D array, each row is a row vector.
     """
     if np.size(w) != np.size(waves,1):
-        return False
+        return None
+    if waves is None:
+        return None
     i = 0
     for ww in waves:
         if np.all(np.abs(ww-w) < EPS):
             return i
         i += 1
     return None
+
+def index_stars(G,stars):
+    """
+    """
+    if np.size(G) != np.size(stars[0].waves.T[0]):
+        return None,None,None
+    i = 0
+    for s in stars:
+        iw = index_waves(G,s.waves.T)
+        if iw is not None:
+            return i,iw,0
+        if s.iwaves is not None:
+            iw = index_waves(G,s.iwaves.T)
+            if iw is not None:
+                return i,iw,1
+        i += 1
+    return None,None,None
 
