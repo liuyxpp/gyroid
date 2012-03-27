@@ -26,6 +26,7 @@ class Basis(object):
         self.N = 0  # this is for coefficients, N = #(closed star) +
                     # 2 * #(open star pair)
         n = 0   # record the number of StarAtom
+        m = 0   # record the index of coefficent
         G2_pre = grid.Gsq[0] # Previous G2
         for G2 in grid.Gsq:
             if np.abs(G2-G2_pre) > EPS:
@@ -131,6 +132,7 @@ class Basis(object):
                     else:
                         c_fft[ind] = self.stars[i].c[iw] * (complex(
                                                 c[i],-c[i+1]) / sqr2)
+                        print i,iw,flag
                 else:
                     c_fft[ind] = self.stars[i].ic[iw] * (complex(
                                                 c[i-1],c[i]) / sqr2)

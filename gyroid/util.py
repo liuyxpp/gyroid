@@ -13,7 +13,7 @@ from mayavi import mlab
 
 __all__ = ["render_structure_1d","render_structure_2d","render_structure_3d"]
 
-def render_structure_1d(basis,Na,c,
+def render_structure_1d(basis,grid,Na,c,
                         save_data=True,data_name="struct1d.mat",
                         save_img=True,show_img=True,
                         img_name="struct1d.png",
@@ -24,7 +24,10 @@ def render_structure_1d(basis,Na,c,
     c     - coefficients for each basis function.
     """
 
-    struct = basis.generate_structure(Na,c)
+    #struct = basis.generate_structure(Na,c)
+    struct = basis.generate_structure_by_fft((Na,),c,grid)
+    # For debug only
+    print basis.fft2sabf(np.fft.fftn(struct),grid)
     a = 1.0 * basis.shape.h[0,0]
     rx = np.array([a*i/Na for i in np.arange(Na)])
 
@@ -52,7 +55,8 @@ def render_structure_2d(basis,grid,Na,Nb,c,
 
     #struct = basis.generate_structure((Na,Nb),c)
     struct = basis.generate_structure_by_fft((Na,Nb),c,grid)
-    print basis.fft2sabf(np.fft.fftn(struct),grid)
+    # For debug only
+    #print basis.fft2sabf(np.fft.fftn(struct),grid)
     rx = np.zeros((Na,Nb))
     ry = np.zeros((Na,Nb))
     for (i,j) in np.ndindex(Na,Nb):
@@ -108,7 +112,8 @@ def render_structure_3d(basis,grid,Na,Nb,Nc,c,
 
     #struct = basis.generate_structure((Na,Nb,Nc),c)
     struct = basis.generate_structure_by_fft((Na,Nb,Nc),c,grid)
-    print basis.fft2sabf(np.fft.fftn(struct),grid)
+    # For debug only
+    #print basis.fft2sabf(np.fft.fftn(struct),grid)
     rx = np.zeros((Na,Nb,Nc))
     ry = np.zeros((Na,Nb,Nc))
     rz = np.zeros((Na,Nb,Nc))
