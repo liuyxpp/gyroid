@@ -22,20 +22,45 @@ class Basis(object):
         self.dim = group.dim
         self.shape = group.shape
         self.stars = []
-        self.N = 0
+        self.starmap = {} # key: G (within BZ), value: index of a star
+        self.N = 0  # this is for coefficients, N = #(closed star) +
+                    # 2 * #(open star pair)
+        n = 0   # record the number of StarAtom
         G2_pre = grid.Gsq[0] # Previous G2
         for G2 in grid.Gsq:
             if np.abs(G2-G2_pre) > EPS:
                 s = StarSet(group,grid,G2_pre)
                 # s.stars is an Python list.
                 self.stars.extend(s.stars)
+                # map G to the index of star
+                i = 0
+                for star in s.stars:
+                    iw = 0
+                    for G in star.waves.T:
+                        key = tuple(G.astype(int))
+                        self.starmap[key] = (n+i, iw, 0)
+                        iw += 1
+                    if star.iwaves is not None:
+                        iw = 0
+                        for Gi in star.iwaves.T:
+                            key = tuple(Gi.astype(int))
+                            self.starmap[key] = (n+i, iw, 1)
+                            iw += 1
+                    i += 1
+                n += i  # i stars has been counted in last cycle
                 self.N += s.N
                 G2_pre = G2
+#        i,iw,flag = index_stars((0,0,-15),self.stars)
+#        print i,iw,flag
+#        print self.stars[i].waves
+#        print self.stars[i].iwaves
 
     def generate_structure(self,real_grid,c):
         """
         real_grid is a tuple contains the discrete numbers for a, b, and c unit vectors in real space.
         c is an array contains the coefficients for each basis.
+
+        NOTE: this method is much slower than generate_structure_by_fft()
         """
         if np.size(real_grid) != self.dim:
             raise ValueError("Dimension not match when generating struct.")
@@ -76,7 +101,7 @@ class Basis(object):
             raise ValueError("No. of Bases and coefficients not match when generating structure.")
 
         c_fft = self.sabf2fft(c,real_grid,grid)
-        return np.fft.ifft2(c_fft).real
+        return np.fft.ifftn(c_fft).real
 
     def sabf2fft(self,c,fft_grid,grid):
         """
@@ -94,7 +119,11 @@ class Basis(object):
         for ind in np.ndindex(fft_grid):
             G = np.array(ind)
             G,G2 = grid.to_BZ(G)
-            i, iw, flag = index_stars(G,self.stars)
+            key = tuple(G.astype(int))
+            if self.starmap.has_key(key):
+                i, iw, flag = self.starmap[key] #index_stars(G,self.stars)
+            else:
+                i, iw, flag = None,None,None
             if i is not None:
                 if flag == 0:
                     if self.stars[i].iwaves is None:
@@ -138,7 +167,7 @@ class Basis(object):
                 else:
                     ind = tuple(Gi.astype(int))
                     z = c_fft[ind]
-                c[i+1] = sqr2 * (z/s.ic[s.N-1]).real
+                c[i+1] = sqr2 * (z/s.ic[s.N-1]).imag
                 i += 2
         return c
 
@@ -166,7 +195,6 @@ class StarSet(object):
         waves = self.__select_waves(grid,Gsq)
         sorted_waves,phases = self.__sort_waves(waves)
         self.__find_stars(group,grid,sorted_waves)
-        self.N = np.size(self.stars)
 
     def __select_waves(self,grid,G2):
         (ind,) = np.where(np.abs(grid.Gsq-G2)<EPS)
@@ -265,6 +293,7 @@ class StarSet(object):
         """
 
         self.stars = []
+        self.N = 0
         rw = waves
         while rw is not None:
             G1 = rw[:,0]
@@ -275,6 +304,7 @@ class StarSet(object):
             if index_waves(Gi,star_waves.T) is not None:
                 # a closed star
                 self.stars.append(StarAtom(grid,self.Gsq,star_waves,phases))
+                self.N += 1
                 if np.size(rw,1) == np.size(star_waves,1):
                     return
                 tw = None
@@ -286,12 +316,14 @@ class StarSet(object):
                             tw = np.append(tw,[w],axis=0)
                 rw = tw.T
             else:
+                # an open star pair
                 invert_waves, invert_phases = self.__form_star(
                                                     Gi,g,grid,rw)
                 invert_waves, invert_phases = self.__sort_waves(
                                             invert_waves,invert_phases)
                 self.stars.append(StarAtom(grid,self.Gsq,
                     star_waves,phases,invert_waves,invert_phases))
+                self.N += 2
                 if np.size(rw,1) == np.size(star_waves,1) + np.size(
                                                         invert_waves,1):
                     return

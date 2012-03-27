@@ -51,38 +51,50 @@ def test_Basis2():
     for s in bs.stars:
         print s.__dict__
     c = np.zeros(bs.N)
-    c[0] = 1.0
-    c[1] = 1.0
+    c[0] = 1.0*N1*N2
+    c[1] = 18.0
     c[2] = 1.0
     render_structure_2d(bs,gd1,N1,N2,c)
 
 def test_Basis3():
     b = "Bravais"
 
-#    N1,N2,N3 = 16,16,32
-#    uc = UnitCell(3,HEXAGONAL,np.array([1.0,2.0]))
-#    g1 = Group(3,b,uc.shape,"P6mm")
-#    gd1 = Grid(np.array([4,4,4]),g1)
-#    bs = Basis(g1,gd1)
-#    render_structure_3d(bs,N1,N2,N3,1.0)
-#    print bs.__dict__
-#    for s in bs.stars:
-#        print s.__dict__
-
-    N1,N2,N3 = 32,32,32
-    uc = UnitCell(3)
-    g2 = Group(3,b,uc.shape,"Ia-3d")
-    gd2 = Grid(np.array([5,5,5]),g2)
-    bs2 = Basis(g2,gd2)
-    print bs2.__dict__
-    for s in bs2.stars:
+    N1,N2,N3 = 16,16,16
+    uc = UnitCell(3,HEXAGONAL,np.array([1.0,1.0]))
+    g = Group(3,b,uc.shape,"P6mm")
+    gd = Grid(np.array([N1,N2,N3]),g)
+    bs = Basis(g,gd)
+    print bs.__dict__
+    for s in bs.stars:
         print s.__dict__
-    render_structure_3d(bs2,N1,N2,N3,1.0)
+    c = 1.0
+#    c = np.zeros(bs.N)
+#    c[0] = 1.0
+#    c[1] = 1.0
+#    c[2] = 1.0
+#    c[3] = 1.0
+#    c[4] = 1.0
+    render_structure_3d(bs,gd,N1,N2,N3,c)
+
+#    N1,N2,N3 = 32,32,32
+#    uc = UnitCell(3)
+#    g2 = Group(3,b,uc.shape,"Ia-3d")
+#    gd2 = Grid(np.array([32,32,32]),g2)
+#    bs2 = Basis(g2,gd2)
+#    print bs2.__dict__
+#    for s in bs2.stars:
+#        print s.__dict__
+#    c = np.zeros(bs2.N)
+#    c[0] = 1
+#    c[1] = 0.016
+#    c[2] = 0.0042
+#    c[3] = 0.00006
+#    render_structure_3d(bs2,gd2,N1,N2,N3,c)
 
 def run_test():
     #test_Basis1()
-    test_Basis2()
-    #test_Basis3()
+    #test_Basis2()
+    test_Basis3()
 
 if __name__ == '__main__':
     run_test()

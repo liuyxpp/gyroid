@@ -52,7 +52,7 @@ def render_structure_2d(basis,grid,Na,Nb,c,
 
     #struct = basis.generate_structure((Na,Nb),c)
     struct = basis.generate_structure_by_fft((Na,Nb),c,grid)
-    print basis.fft2sabf(np.fft.fft2(struct),grid)
+    print basis.fft2sabf(np.fft.fftn(struct),grid)
     rx = np.zeros((Na,Nb))
     ry = np.zeros((Na,Nb))
     for (i,j) in np.ndindex(Na,Nb):
@@ -93,7 +93,7 @@ def render_structure_2d(basis,grid,Na,Nb,c,
         plt.show()
     return rx,ry,struct
 
-def render_structure_3d(basis,Na,Nb,Nc,c,
+def render_structure_3d(basis,grid,Na,Nb,Nc,c,
                         save_data=True,data_name="struct3d.mat",
                         save_img=True,show_img=True,
                         img_name="struct3d.png",
@@ -106,7 +106,9 @@ def render_structure_3d(basis,Na,Nb,Nc,c,
     NOTE: the best way to view 3D volume data is: first save the data to mat, and let Matlab (C) render the volume data.
     """
 
-    struct = basis.generate_structure((Na,Nb,Nc),c)
+    #struct = basis.generate_structure((Na,Nb,Nc),c)
+    struct = basis.generate_structure_by_fft((Na,Nb,Nc),c,grid)
+    print basis.fft2sabf(np.fft.fftn(struct),grid)
     rx = np.zeros((Na,Nb,Nc))
     ry = np.zeros((Na,Nb,Nc))
     rz = np.zeros((Na,Nb,Nc))
