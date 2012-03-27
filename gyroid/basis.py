@@ -26,7 +26,7 @@ class Basis(object):
         self.N = 0  # this is for coefficients, N = #(closed star) +
                     # 2 * #(open star pair)
         n = 0   # record the number of StarAtom
-        m = 0   # record the index of coefficent
+        ic = 0   # record the index of coefficent
         G2_pre = grid.Gsq[0] # Previous G2
         for G2 in grid.Gsq:
             if np.abs(G2-G2_pre) > EPS:
@@ -39,14 +39,16 @@ class Basis(object):
                     iw = 0
                     for G in star.waves.T:
                         key = tuple(G.astype(int))
-                        self.starmap[key] = (n+i, iw, 0)
+                        self.starmap[key] = (n+i, iw, ic, 0)
                         iw += 1
+                    ic += 1
                     if star.iwaves is not None:
                         iw = 0
                         for Gi in star.iwaves.T:
                             key = tuple(Gi.astype(int))
-                            self.starmap[key] = (n+i, iw, 1)
+                            self.starmap[key] = (n+i, iw, ic, 1)
                             iw += 1
+                        ic += 1
                     i += 1
                 n += i  # i stars has been counted in last cycle
                 self.N += s.N
@@ -122,20 +124,20 @@ class Basis(object):
             G,G2 = grid.to_BZ(G)
             key = tuple(G.astype(int))
             if self.starmap.has_key(key):
-                i, iw, flag = self.starmap[key] #index_stars(G,self.stars)
+                #index_stars(G,self.stars)
+                i, iw, ic, flag = self.starmap[key]
             else:
-                i, iw, flag = None,None,None
+                i, iw, ic, flag = None,None,None,None
             if i is not None:
                 if flag == 0:
                     if self.stars[i].iwaves is None:
                         c_fft[ind] = self.stars[i].c[iw] * c[i]
                     else:
                         c_fft[ind] = self.stars[i].c[iw] * (complex(
-                                                c[i],-c[i+1]) / sqr2)
-                        print i,iw,flag
+                                                c[ic],-c[ic+1]) / sqr2)
                 else:
                     c_fft[ind] = self.stars[i].ic[iw] * (complex(
-                                                c[i-1],c[i]) / sqr2)
+                                                c[ic-1],c[ic]) / sqr2)
         return c_fft
 
     def fft2sabf(self,c_fft,grid):
