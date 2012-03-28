@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 gyroid.space_group
-===============
+==================
 
 """
 
@@ -16,6 +16,24 @@ __all__ = ["symmetry_generator1",
           ]
 
 def symmetry_generator1(ITA_number,b,h):
+    ''' Output 1D space point group symmetry generators.
+
+    There are **2** 1D space groups.
+    Currently, all 1D space groups are supported::
+
+       [1, 2]
+
+    :param ITA_number: 1 for P1, 2 for P-1
+    :type ITA_number: integer
+    :param b: basis type
+    :type b: string
+    :param h: the shape of a unit cell
+    :type h: :class:`Shape`
+    :returns: the minimun number of symmetries which can be further expanded to the full set of point group symmetries
+    :rtype: a list of :class:`Symmetry` objects
+
+    '''
+
     I = np.eye(1)
     t0 = np.zeros(1)
     sI = Symmetry(1,b,h,I,t0)
@@ -26,28 +44,27 @@ def symmetry_generator1(ITA_number,b,h):
                 Symmetry(1,b,h,-1.0*I,t0)
                ]
     else:
-        raise ValueError("ITA number is not 1D.")
+        raise ValueError('ITA number is not 1D.')
 
 def symmetry_generator2(ITA_number,b,h):
-    """
-    There are 17 2D space groups.
-    Currently, Only following 2D space groups are supported:
-        [17]
+    ''' Output 2D space point group symmetry generators.
 
-    Variable
-    --------
-        ITA_number  -   a sequential number as given in the 
-                        International Tables for Crystallography, 
-                        Vol. A
-        b           -   Basis type
-        h           -   Shape instance that describes the unit cell
+    There are **17** 2D space groups.
+    Currently, Only following 2D space groups are supported::
 
-    Output
-    ------
-        A list of Symmetry instances that contains the minimun number of
-        symmetries which can be further expanded to the full set of point 
-        group symmetries.
-    """
+       [17]
+
+    :param ITA_number: a sequential number as given in the International Tables for Crystallography, Vol. A, allowed range `[1,17]`
+    :type ITA_number: integer
+    :param b: basis type
+    :type b: string
+    :param h: the shape of a unit cell
+    :type h: :class:`Shape`
+    :returns: the minimun number of symmetries which can be further expande to the full set of point group symmetries
+    :rtype: a list of :class:`Symmetry` objects
+
+    '''
+
     I = np.eye(2)
     t0 = np.zeros(2)
     sI = Symmetry(2,b,h,I,t0)
@@ -62,9 +79,27 @@ def symmetry_generator2(ITA_number,b,h):
                 Symmetry(2,b,h,Rmxx,t0)
                ]
     else:
-        raise ValueError("ITA number not supported.")
+        raise ValueError('ITA number not supported.')
 
 def symmetry_generator3(ITA_number,b,h):
+    ''' Output 3D space point group symmetry generators.
+
+    There are **230** 3D space groups.
+    Currently, the supported 3D space groups are::
+
+       [183, 230]
+
+    :param ITA_number: a sequential number as given in the International Tables for Crystallography, Vol. A, allowed range `[1,17]`
+    :type ITA_number: integer
+    :param b: basis type
+    :type b: string
+    :param h: the shape of a unit cell
+    :type h: :class:`Shape`
+    :returns: the minimun number of symmetries which can be further expande to the full set of point group symmetries
+    :rtype: a list of :class:`Symmetry`
+
+    '''
+
     I = np.eye(3)
     t0 = np.zeros(3)
     sI = Symmetry(3,b,h,I,t0)
@@ -101,5 +136,5 @@ def symmetry_generator3(ITA_number,b,h):
                 Symmetry(3,b,h,I,Tsss)
                ]
     else:
-        raise ValueError("ITA number not supported.")
+        raise ValueError('ITA number not supported.')
 

@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 """
 gyroid.basis
-===============
+============
 
-:copyright: (c) 2012 by Yi-Xin Liu
-:license: BSD, see LICENSE for more details.
+This module is the main module of the package, wherein :class:`Basis` class abstractsa whole SABF set.
+
+This module defines three classes: :class:`Basis`, :class:`StarSet`, :class:`StarAtom`.
+
+This module provides one function: :func:`index_waves`.
 
 """
 
@@ -13,10 +16,13 @@ from numpy.linalg import inv
 
 from .common import BRAVAIS,CARTESIAN,EPS
 
-__all__ = ["Basis","StarSet","StarAtom"]
+__all__ = ["Basis","StarSet","StarAtom","index_waves"]
 
 class Basis(object):
-    """
+    """ Representation of a whole SABF set.
+
+    The SABF set mainly depends on the type of unit cell (crystal system), the point group symmetries, and how the unit cell is discretized.
+
     """
     def __init__(self,group,grid):
         self.dim = group.dim
@@ -53,31 +59,36 @@ class Basis(object):
                 n += i  # i stars has been counted in last cycle
                 self.N += s.N
                 G2_pre = G2
-#        i,iw,flag = index_stars((0,0,-15),self.stars)
-#        print i,iw,flag
-#        print self.stars[i].waves
-#        print self.stars[i].iwaves
 
     def generate_structure(self,real_grid,c):
-        """
-        real_grid is a tuple contains the discrete numbers for a, b, and c unit vectors in real space.
-        c is an array contains the coefficients for each basis.
+        ''' Generate structure without projecting SABF to FFT.
 
-        NOTE: this method is much slower than generate_structure_by_fft()
-        """
+        :param real_grid: number of grids along each unit vectors of the unit cell in real space
+        :type real_grid: tuple with integers
+        :param c: coefficients for SABF
+        :type c: 1D `double numpy.array`
+        :return: real space structure constructed via SABF
+        :rtype: `double numpy.array` object
+
+        **Note**
+        This method is much slower than :func:`generate_structure_by_fft`. Use it for debug only.
+
+        '''
         if np.size(real_grid) != self.dim:
-            raise ValueError("Dimension not match when generating struct.")
+            raise ValueError('Dimension of input grid and dimension'
+                             'of the Group not match '
+                             'when generating structure.')
         if np.size(c) == 1:
            cc = c
            c = np.zeros(self.N)
            c.fill(cc)
         elif np.size(c) != self.N:
-            raise ValueError("No. of Bases and coefficients not match when generating structure.")
+            raise ValueError('Number of Bases and number of coefficients '
+                             'not match when generating structure.')
 
         struct = np.zeros(real_grid)
         for ind,v in np.ndenumerate(struct):
-            # numpy.ndarray can divide tuple
-            #x = ind * self.shape.l / real_grid
+            #: `numpy.array` can divide tuple
             x = 1.0 * np.array(ind) / real_grid
             i = 0
             for s in self.stars:
@@ -94,28 +105,53 @@ class Basis(object):
         return struct/vol
 
     def generate_structure_by_fft(self,real_grid,c,grid):
+        """ Generate structure by projecting SABF to FFT, and then perform an inverse FFT.
+
+        :param real_grid: number of grids along each unit vectors of the unit cell in real space
+        :type real_grid: tuple with integers
+        :param c: coefficients for SABF
+        :type c: 1D `double numpy.array`
+        :param grid: a :class:`Grid` object
+        :return: real space structure constructed via SABF
+        :rtype: `double numpy.array` object
+
+        """
+
         if np.size(real_grid) != self.dim:
-            raise ValueError("Dimension not match when generating struct.")
+            raise ValueError('Dimension of input grid and dimension '
+                             'of Group not match'
+                             'when generating structure.')
         if np.size(c) == 1:
            cc = c
            c = np.zeros(self.N)
            c.fill(cc)
         elif np.size(c) != self.N:
-            raise ValueError("No. of Bases and coefficients not match when generating structure.")
+            raise ValueError('Number of Bases and number of coefficients'
+                             'not match when generating structure.')
 
         c_fft = self.sabf2fft(c,real_grid,grid)
         return np.fft.ifftn(c_fft).real
 
     def sabf2fft(self,c,fft_grid,grid):
-        """
-        c           - is a list of coefficients for SABF.
-        fft_grid    - tuple with discretized number for each side.
-        """
+        ''' Project a set of SABF coefficients onto a set of FFT coefficients.
+
+        :param real_grid: number of grids along each unit vectors of the unit cell in real space
+        :type real_grid: tuple with integers
+        :param c: coefficients for SABF
+        :type c: 1D `double numpy.array`
+        :param grid: a :class:`Grid` object
+        :return: a set of FFT coefficients on the discretized unit cell
+        :rtype: `double numpy.array`
+
+        '''
 
         if np.size(c) != self.N:
-            raise ValueError("No. of input coefficients != No. of stars.")
+            raise ValueError('Number of input coefficients '
+                             'and Number of stars not match '
+                             'when performing SABF -> FFT projection.')
         if np.size(fft_grid) != self.dim:
-            raise ValueError("Dimension not match in sabf2fft.")
+            raise ValueError('Dimension not match '
+                             'when performing SABF -> FFT projection.')
 
         sqr2 = np.sqrt(2.0)
         c_fft = np.zeros(fft_grid).astype(complex)
@@ -141,6 +177,16 @@ class Basis(object):
         return c_fft
 
     def fft2sabf(self,c_fft,grid):
+        """ Project a set of FFT coefficients onto a set of SABF coefficients.
+
+        :param c_fft: a set of FFT coefficients on a discretized unit cell
+        :type c_fft: `double numpy.array`
+        :param grid: a :class:`Grid` object
+        :return: a set of coefficients for SABF.
+        :rtype: a 1D `double numpy.array`
+
+        """
+
         if np.ndim(c_fft) != self.dim:
             raise ValueError("Dimension not match in sabf2fft.")
 
@@ -177,23 +223,28 @@ class Basis(object):
 
 
 class StarSet(object):
-    """
-    A StarSet is a collection of stars with all waves have same magnitude.
-    For example, for P6mm in a 32 x 32 grid HEXAGONAL unit cell, an example of a
-    collection of star with same magnitude is:
-        [[ 8  8 7  7 5  5 3  3 0  0 -3 -3 -5 -5 -7 -7 -8 -8],
-         [-3 -5 0 -7 3 -8 5 -8 7 -7  8 -5  8 -3  7  0  5  3]]
-    It has two *closed* stars:
-        [[ 8  8 5  5 3  3 -3 -3 -5 -5 -8 -8],
-         [-3 -5 3 -8 5 -8  8 -5  8 -3  5  3]]
-    and
-        [[7  7 0  0 -7 -7],
-         [0 -7 7 -7  7  0]]
-    """
+    ''' A :class:`StarSet` object is a collection of stars containing waves with same magnitude.
+
+    Wave vectors with same magnitudes may form more than one closed stars open star pair. For example, for P6mm in a 32 x 32 grid HEXAGONAL unit cell, a collection of waves with same magnitudes is::
+
+       [[ 8  8 7  7 5  5 3  3 0  0 -3 -3 -5 -5 -7 -7 -8 -8],
+        [-3 -5 0 -7 3 -8 5 -8 7 -7  8 -5  8 -3  7  0  5  3]]
+
+    It has two *closed* stars::
+
+       [[ 8  8 5  5 3  3 -3 -3 -5 -5 -8 -8],
+        [-3 -5 3 -8 5 -8  8 -5  8 -3  5  3]]
+
+    ::
+
+       [[7  7 0  0 -7 -7],
+        [0 -7 7 -7  7  0]]
+
+    '''
 
     def __init__(self,group,grid,Gsq):
         if self.__check_cancel():
-            raise ValueError("Check cancel failed when creating a Star.")
+            raise ValueError('Check cancel failed when creating a Star.')
         self.dim = group.dim
         self.Gsq = Gsq
         waves = self.__select_waves(grid,Gsq)
@@ -203,15 +254,14 @@ class StarSet(object):
     def __select_waves(self,grid,G2):
         (ind,) = np.where(np.abs(grid.Gsq-G2)<EPS)
         if np.max(ind) - np.min(ind) + 1 != np.size(ind):
-            raise ValueError("Waves in Grid not sorted according to G^2.")
+            raise ValueError('Waves in Grid not sorted according to G^2.')
         return grid.waves[:,ind]
 
     def __check_cancel(self):
-        """
-        Not implemented yet. Since we have excluded the cancel waves in
-        creating Grid.waves.
+        '''
+        Not implemented yet. We have excluded the cancel waves in creating Grid.waves.
         Currently, we do not support canceled stars.
-        """
+        '''
         return False
 
     def __sort_waves(self,waves,phases=None):
@@ -251,7 +301,7 @@ class StarSet(object):
                     prw_sorted[3],prw_sorted[2],prw_sorted[1]]),
                     prw_sorted[0])
 
-        # Following code is a shortcut but hard to read
+        # Following code is a trick but hard to read
         # ind = np.lexsort(waves.T)
         # return np.fliplr(np.fliplr(waves.T.take(ind,axis=-1)).T)
 
@@ -287,14 +337,14 @@ class StarSet(object):
                         ph = self.__calc_phase(G,group.symm[i].t,group.type)
                         phases = np.append(phases,[ph],axis=0)
             else:
-                raise ValueError("Waves does not contain entire star.")
+                raise ValueError('Waves does not contain entire star.')
         return star_waves.T,phases
 
     def __find_stars(self,g,grid,waves):
-        """
-        For waves with a same |G|^2, they may form a closed star, two open
+        '''
+        For waves with a same G^2, they may form a closed star, two open
         stars, or several closed stars.
-        """
+        '''
 
         self.stars = []
         self.N = 0
@@ -342,24 +392,28 @@ class StarSet(object):
 
 
 class StarAtom(object):
-    """
-    A StarAtom is a star or an open star pair.
-    """
+    ''' A :class:`StarAtom` object represents a closed star or an open star pair.
+
+    For a closed star, when a wave vector **G** is in it, -**G** is also in it.
+
+    For an open star pair, if a wave vector **G** is in the first star, the
+    inverse vector -**G** must be found in the accompanying invert star.
+
+    '''
 
     def __init__(self,grid,Gsq,waves,phases,iwaves=None,iphases=None):
         self.N = np.size(waves,1)
         self.Gsq = Gsq
         if iwaves is not None:
             if iphases is None:
-                raise ValueError(
-                    "Coefficients expected for inverted star.")
+                raise ValueError('Coefficients expected for inverted star.')
             if np.size(iwaves,1) != self.N:
-                raise ValueError(
-                    "No. Waves in star and inverted star not match.")
+                raise ValueError('Nunmber of waves in the first star '
+                                 'and the invert star not match.')
         else:
             if iphases is not None:
-                raise ValueError(
-                    "Waves expected for inverted coefficients.")
+                raise ValueError('Waves expected for inverted '
+                                 'coefficients.')
         self.waves = waves
         self.iwaves = iwaves
         self.c, self.ic = self.__find_coeff(phases,iphases)
@@ -367,11 +421,17 @@ class StarAtom(object):
             self.__set_coeff_for_closed_star(grid)
 
     def f(self,x,shape,c1,c2):
-        """
-        the value of basis function f(r) at position r.
-        x   - a Bravais type real space vector.
-        c1  - the coefficient for waves
-        c2  - the coefficient for iwaves
+        """ Calculate the value of the SABF f(**r**) at position **r**.
+
+        :param x: a `BRAVAIS` type real space vector
+        :type x: string
+        :param shape: a :class:`Shape` object
+        :param c1: the coefficient for SABF
+        :type c1: double
+        :param c2: the coefficient for invert SABF. If the star is not an open star pair, it is ignored
+        :returns: the value of an SABF or two SABF if the star is an open star pair
+        :rtype: tuple with two doubles
+
         """
         if self.iwaves is None:
             f1 = self.__f(self.waves,self.c,x,shape)
@@ -408,9 +468,10 @@ class StarAtom(object):
                    )
 
     def __set_coeff_for_closed_star(self,grid):
-        """
-        For an ordered closed star, if we denote the first wave in the star G1, then its inversion (-G1) must be the last wave in the star.
-        """
+        '''
+        For an ordered closed star, if we denote the first wave in the star **G1**, then its inversion -**G1** must be the last wave in the star.
+        '''
+
         G = self.waves[:,0]
         Gi = -1.0 * G
         Gi,Gi2 = grid.to_BZ(Gi)
@@ -421,13 +482,13 @@ class StarAtom(object):
         if np.abs(c.imag) < EPS:
             c1 = c.real
         else:
-            raise ValueError("""First coefficient in closed star has
-                              imaginary part.""")
+            raise ValueError('First coefficient in closed star has '
+                             'imaginary part.')
         if np.abs(ci.imag) < EPS:
             c2 = ci.real
         else:
-            raise ValueError("""Last coefficient in closed star has
-                              imaginary part.""")
+            raise ValueError('Last coefficient in closed star has '
+                             'imaginary part.')
 
         # for inversion star pairs, the first star's sign is +1,
         # the next is -1.
@@ -437,14 +498,21 @@ class StarAtom(object):
             self.c = self.c * complex(0.0,-1.0)
             return -1
         else:
-            raise ValueError("""Closed star is neither cosine-like nor
-                             sine-like.""")
+            raise ValueError('Closed star is neither cosine-like nor '
+                             'sine-like.')
 
 def index_waves(w,waves):
-    """
-    w is a row vector.
-    waves is a 2D array, each row is a row vector.
-    """
+    ''' Find the index of wave in a list of waves.
+
+    :param w: wave vector to be searched
+    :type w: `numpy.array` row vector
+    :param waves:  a collection of wave vectors, each row vector is a wave
+    :type waves: `numpy.array`
+    :return: index for a wave in the collection of waves
+    :rtype: integer
+
+    '''
+
     if np.size(w) != np.size(waves,1):
         return None
     if waves is None:
@@ -457,8 +525,13 @@ def index_waves(w,waves):
     return None
 
 def index_stars(G,stars):
-    """
-    """
+    ''' Find the index of a star within a list of stars which contains wave
+    vector **G**.
+
+    This function is very slow. Use it for debug only.
+
+    '''
+
     if np.size(G) != np.size(stars[0].waves.T[0]):
         return None,None,None
     i = 0

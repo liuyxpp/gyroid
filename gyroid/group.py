@@ -16,22 +16,25 @@ from .space_group import symmetry_generator1,symmetry_generator2,symmetry_genera
 __all__ = ["Group","CayleyTable"]
 
 class Group(object):
+    ''' A :class:`Group` object is a representaion of a space group.
 
-    """
-    A representaion of a space group.
-
-    All symmetries in a space group must have the same basis, i.e. they must all be either the Bravais or the Cartesian bases.
+    All symmetries in a space group must have the same basis type, i.e. they
+    must all be either the BRAVAIS or the CARTESIAN bases.
 
     The space group is constructed either by providing a Hermann-Mauguin Symbol (HM_symbol) or a sequential number as given in the International Tables for Crystallography, Vol. A (ITA_number)
-    """
+
+    :members: dim, type, shape, symm
+
+    '''
 
     def __init__(self,dim,basis_type,shape_matrix,
                  HM_symbol=None,ITA_number=None):
-        """
-        If both HM symbol and ITA number are provided, use HM symbol only. And the consistency of HM symbol and ITA number will not be checked.
-        """
+        '''
+        If both HM symbol and ITA number are provided, use HM symbol only. And the consistency of HM symbol and ITA number is checked.
+        '''
+
         if dim < 1 or dim > 3:
-            raise ValueError("Error: only 1D, 2D, and 3D space allowed.")
+            raise ValueError('Only 1D, 2D, and 3D space allowed.')
         self.dim = dim
         self.type = basis_type
         self.shape = shape_matrix
@@ -124,8 +127,8 @@ class Group(object):
 
 
 class CayleyTable(object):
-    """
-    Make a full Cayley table from a group.
+    """ Make a full Cayley table from a list of :class:`Symmetry` objects.
+
     """
 
     def __init__(self,symm=None):
@@ -137,17 +140,13 @@ class CayleyTable(object):
             self.order = len(symm)
             self.table = [[symm[i]*symm[j] for i in range(self.order)]
                                            for j in range(self.order)]
-        # Find index for symmetry element table(i,j) in symm
-        # If symmetry element (i,j) is not in symm, then index(i,j)=-1
-#        self.index = np.zeros((self.order,self.order)) - 1
-#        for (i,j) in np.ndindex(self.order,self.order):
-#                if self.table[i][j] in symm:
-#                    self.index[i,j] = symm.index(self.table[i][j])
 
     def update(self,symm):
-        """
-        Currently, only len(symm) > self.order is supported.
-        """
+        ''' Update the :class:`CayleyTable` object.
+
+        Currently, `len(symm)` must be larger than `self.order`.
+
+        '''
 
         l0 = self.order
         l1 = len(symm)

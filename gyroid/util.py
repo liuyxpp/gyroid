@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 gyroid.util
-===============
+===========
 
 """
 
@@ -18,16 +18,32 @@ def render_structure_1d(basis,grid,Na,c,
                         save_img=True,show_img=True,
                         img_name="struct1d.png",
                         **kwargs):
-    """
-    basis - An instance of Basis class
-    Na    - Number of grids to discretes the side a of the unit cell.
-    c     - coefficients for each basis function.
-    """
+    ''' Calculate and render 1D structure for given SABF and unit cell.
+
+    :param basis: a set of SABFs
+    :type basis: :class:`Basis`
+    :param Na: number of grids in **a** of the unit cell.
+    :type Na: integer
+    :param c: coefficients for each SABF
+    :type c: 1D `numpy.array`
+    :param save_data: if True, save data in file with Matlab mat format
+    :type save_data: bool
+    :param data_name: the file name of the data file
+    :type data_name: string
+    :param save_img: if True, save image in file, the format is determined by the extension of the image file name
+    :type save_img: bool
+    :param img_name: the file name of the image file
+    :type img_name: string
+    :param show_img: if True, show image on the screen
+    :type show_img: bool
+    :param kwargs: any extra key words arguments will be passed to plot functions
+
+    '''
 
     #struct = basis.generate_structure(Na,c)
     struct = basis.generate_structure_by_fft((Na,),c,grid)
     # For debug only
-    print basis.fft2sabf(np.fft.fftn(struct),grid)
+    #print basis.fft2sabf(np.fft.fftn(struct),grid)
     a = 1.0 * basis.shape.h[0,0]
     rx = np.array([a*i/Na for i in np.arange(Na)])
 
@@ -47,11 +63,29 @@ def render_structure_2d(basis,grid,Na,Nb,c,
                         img_name="struct2d.png",
                         levels=None,cmap=None,
                         **kwargs):
-    """
-    basis - An instance of Basis class
-    Na,Nb - Number of grids to discrete the side a of the unit cell.
-    c     - coefficients for each basis function.
-    """
+    ''' Calculate and render 2D structure for given SABF and unit cell.
+
+    :param basis: a set of SABFs
+    :type basis: :class:`Basis`
+    :param Na: number of grids in **a** of the unit cell.
+    :type Na: integer
+    :param Nb: number of grids in **b** of the unit cell.
+    :type Nb: integer
+    :param c: coefficients for each SABF
+    :type c: 1D `numpy.array`
+    :param save_data: if True, save data in file with Matlab mat format
+    :type save_data: bool
+    :param data_name: the file name of the data file
+    :type data_name: string
+    :param save_img: if True, save image in file, the format is determined by the extension of the image file name
+    :type save_img: bool
+    :param img_name: the file name of the image file
+    :type img_name: string
+    :param show_img: if True, show image on the screen
+    :type show_img: bool
+    :param kwargs: any extra key words arguments will be passed to plot functions
+
+    '''
 
     #struct = basis.generate_structure((Na,Nb),c)
     struct = basis.generate_structure_by_fft((Na,Nb),c,grid)
@@ -103,12 +137,31 @@ def render_structure_3d(basis,grid,Na,Nb,Nc,c,
                         img_name="struct3d.png",
                         levels=None,cmap=None,
                         **kwargs):
-    """
-    basis    - An instance of Basis class
-    Na,Nb,Nc - Number of grids to discrete the side a of the unit cell.
-    c        - coefficients for each basis function.
-    NOTE: the best way to view 3D volume data is: first save the data to mat, and let Matlab (C) render the volume data.
-    """
+    ''' Calculate and render 3D structure for given SABF and unit cell.
+
+    :param basis: a set of SABFs
+    :type basis: :class:`Basis`
+    :param Na: number of grids in **a** of the unit cell.
+    :type Na: integer
+    :param Nb: number of grids in **b** of the unit cell.
+    :type Nb: integer
+    :param Nc: number of grids in **c** of the unit cell.
+    :type Nc: integer
+    :param c: coefficients for each SABF
+    :type c: 1D `numpy.array`
+    :param save_data: if True, save data in file with Matlab mat format
+    :type save_data: bool
+    :param data_name: the file name of the data file
+    :type data_name: string
+    :param save_img: if True, save image in file, the format is determined by the extension of the image file name
+    :type save_img: bool
+    :param img_name: the file name of the image file
+    :type img_name: string
+    :param show_img: if True, show image on the screen
+    :type show_img: bool
+    :param kwargs: any extra key words arguments will be passed to plot functions
+
+    '''
 
     #struct = basis.generate_structure((Na,Nb,Nc),c)
     struct = basis.generate_structure_by_fft((Na,Nb,Nc),c,grid)

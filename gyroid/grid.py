@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 gyroid.grid
-===============
+===========
 
 """
 
@@ -14,32 +14,38 @@ from .common import EPS,SMALL,LARGE
 __all__ = ["Grid","wave_norm"]
 
 class Grid(object):
-    """
-    Discrete form of a unit cell in reciprocal space.
-    """
+    ''' A :class:`Grid` object represents a Discretized unit cell in reciprocal space.
+
+    '''
 
     def __init__(self,ngrid,g):
-        """
-        ngrid must be a length dim vector containing positive integers.
-        ngrid must be a numpy.ndarray.
-        g is a Group instance.
-        """
+        ''' Initiator of :class:`Grid`
+
+        :param ngrid: contains number of grids in each dimension
+        :type ngrid: `numpy.array` with integers
+        :param g: a :class:`Group` object
+
+        '''
+
         self.dim = g.dim
         if np.size(ngrid) != g.dim:
-            raise ValueError("Dimension and ngrid not match.")
+            raise ValueError('Space dimension and the length of `ngrid` '
+                             'not match.')
         self.N = ngrid
         self.shape = g.shape
         self.__create_waves(g)
 
     def to_BZ(self,G):
-        """
-        G - wavevector, must be a numpy.ndarray
-        Shift a wave vector to the first Brillouin Zone.
-        Output the wave vector and its square magnitude.
-        """
+        ''' Shift a wave vector to the first Brillouin Zone (BZ).
+
+        :param G: a wave vector
+        :type G: `numpy.array`
+        :returns: wave vector in BZ and its square magnitude.
+        '''
+
         if np.size(G) != self.dim:
-            raise ValueError("""The wave vector and Dimension of
-                             the grid not match in to_BZ.""")
+            raise ValueError('The wave vector and Dimension of '
+                             'the grid not match in to_BZ.')
 
         if self.dim == 1:
             (i,) = G
@@ -66,11 +72,20 @@ class Grid(object):
             return self.BZmap[key]
 
     def is_wave_cancel(self,G,g):
-        """
+        ''' Check whether the wave vector is canceled.
+
         A wave is canceled if and only if following conditions are met:
-            1) Leaves G invariant (i.e. G.R == G), and
-            2) Produces a non-zero phase, such that G.t % 1.0 != 0
-        """
+
+        1. Leaves **G** invariant (i.e. **G** . **R** == **G**)
+        2. Produces a non-zero phase, such that **G** . **t** % 1.0 != 0
+
+        :param G: a wave vector
+        :type G: `numpy.array`
+        :param g: a :class:`Group` object
+        :rtype: True or False
+
+        '''
+
         for i in np.arange(g.order):
             Gp = np.dot(G,g.symm[i].R)
             # Pseudo-Spetral method
@@ -88,6 +103,8 @@ class Grid(object):
 
     @property
     def max_Gsq(self):
+        ''' The maximun square of wave vector in the grid.'''
+
         length = SMALL
 
         if self.dim == 1:
@@ -200,10 +217,16 @@ class Grid(object):
         self.Gsq = G2[ind]
 
 def wave_norm(G,shape):
-    """
-    G is a wave vector with 1, 2, or 3 elements
-    shape is a shape matrix
-    """
+    ''' Calculate the square magnitude of a wave vector **G** ^2.
+
+    :param G: a wave vector with 1, 2, or 3 elements
+    :type G: 1D `numpy.array`
+    :param shape: a :class:`Shape` object
+    :return: **G** ^2
+    :rtype: double
+
+    '''
+
     v = np.dot(G,shape.g)
     return np.dot(v,v)
 

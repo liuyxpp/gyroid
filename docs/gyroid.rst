@@ -1,5 +1,5 @@
-gyroid Package
-==============
+API
+===
 
 :mod:`gyroid` Package
 ---------------------

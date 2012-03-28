@@ -3,7 +3,7 @@
 gyroid
 ======
 
-**gyroid** is a python package that generates *symmetry adapted basis functions* based on the space group of a unit cell.
+**gyroid** is a python package that generates *symmetry adapted basis functions* (SABF) based on the space group of a unit cell.
 
 References
 ----------
@@ -17,7 +17,7 @@ References
 
 __author__ = "Yi-Xin Liu <liuyxpp@gmail.com>"
 __license__ = "BSD License"
-__version__ = "0.2"
+__version__ = "0.3"
 
 from .common import *
 from .util import *
