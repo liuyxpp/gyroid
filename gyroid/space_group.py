@@ -100,7 +100,6 @@ def symmetry_generator3(ITA_number,b,h):
 
     '''
 
-    print ITA_number
     I = np.eye(3)
     t0 = np.zeros(3)
     sI = Symmetry(3,b,h,I,t0)
