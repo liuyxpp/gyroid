@@ -100,6 +100,7 @@ def symmetry_generator3(ITA_number,b,h):
 
     '''
 
+    print ITA_number
     I = np.eye(3)
     t0 = np.zeros(3)
     sI = Symmetry(3,b,h,I,t0)
@@ -107,11 +108,13 @@ def symmetry_generator3(ITA_number,b,h):
     # Rotation
     R300z = np.array([[0.0,-1.0,0.0],[1.0,-1.0,0.0],[0.0,0.0,1.0]])
     R200z = np.array([[-1.0,0.0,0.0],[0.0,-1.0,0.0],[0.0,0.0,1.0]])
+    R20y0 = np.array([[-1.0,0.0,0.0],[0.0,1.0,0.0],[0.0,0.0,-1.0]])
     Rmxxz = np.array([[0.0,-1.0,0.0],[-1.0,0.0,0.0],[0.0,0.0,1.0]])
     R2q0z = np.array([[-1.0,0.0,0.0],[0.0,-1.0,0.0],[0.0,0.0,1.0]])
     R20yq = np.array([[-1.0,0.0,0.0],[0.0,1.0,0.0],[0.0,0.0,-1.0]])
     R3xxx = np.array([[0.0,0.0,1.0],[1.0,0.0,0.0],[0.0,1.0,0.0]])
     R2xxo = np.array([[0.0,1.0,0.0],[1.0,0.0,0.0],[0.0,0.0,-1.0]])
+    R2xx0 = np.array([[0.0,1.0,0.0],[1.0,0.0,0.0],[0.0,0.0,-1.0]])
     R1000 = np.array([[-1.0,0.0,0.0],[0.0,-1.0,0.0],[0.0,0.0,-1.0]])
     # Translation
     Ts0s = np.array([0.5,0.0,0.5])
@@ -125,6 +128,17 @@ def symmetry_generator3(ITA_number,b,h):
                 Symmetry(3,b,h,R200z,t0),
                 Symmetry(3,b,h,Rmxxz,t0)
                ]
+    if ITA_number == 229:
+        # "Im-3m 3D"
+	    return [sI,
+                Symmetry(3,b,h,R200z,t0),
+                Symmetry(3,b,h,R20y0,t0),
+                Symmetry(3,b,h,R3xxx,t0),
+                Symmetry(3,b,h,R2xx0,t0),
+                Symmetry(3,b,h,R1000,t0),
+                Symmetry(3,b,h,I,Tsss)
+               ]
+
     if ITA_number == 230:
         # "Ia-3d 3D"
         return [sI,
