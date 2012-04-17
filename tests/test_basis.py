@@ -56,9 +56,9 @@ def test_Basis1():
 
 def test_Basis2():
     b = "Bravais"
-    N1,N2 = 64,64
+    N1,N2 = 128,128
 
-    uc = UnitCell(2,HEXAGONAL,np.array([1.0]))
+    uc = UnitCell(2,HEXAGONAL,np.array([4.25]))
     g1 = Group(2,b,uc.shape,"P6mm")
     gd1 = Grid(np.array([64,64]),g1)
     bs = Basis(g1,gd1)
@@ -74,21 +74,21 @@ def test_Basis2():
 def test_Basis3():
     b = "Bravais"
 
-    N1,N2,N3 = 16,16,16
-    uc = UnitCell(3,HEXAGONAL,np.array([1.0,1.0]))
+    N1,N2,N3 = 32,32,32
+    uc = UnitCell(3,HEXAGONAL,np.array([4.0,4.0]))
     g = Group(3,b,uc.shape,"P6mm")
     gd = Grid(np.array([N1,N2,N3]),g)
     bs = Basis(g,gd)
     print bs.__dict__
     for s in bs.stars:
         print s.__dict__
-    c = 1.0
-#    c = np.zeros(bs.N)
-#    c[0] = 1.0
-#    c[1] = 1.0
-#    c[2] = 1.0
-#    c[3] = 1.0
-#    c[4] = 1.0
+#    c = 1.0
+    c = np.zeros(bs.N)
+    c[0] = N1 * N2 * N3;
+    c[1] = 10.0
+    c[2] = 50.0
+    c[3] = 1.0
+#    c[4] = 5.0
     render_structure_3d(bs,gd,N1,N2,N3,c)
 
 #    N1,N2,N3 = 32,32,32
@@ -107,8 +107,8 @@ def test_Basis3():
 #    render_structure_3d(bs2,gd2,N1,N2,N3,c)
 
 def run_test():
-    test_Basis1()
-    #test_Basis2()
+    #test_Basis1()
+    test_Basis2()
     #test_Basis3()
 
 if __name__ == '__main__':

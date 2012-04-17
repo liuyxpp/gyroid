@@ -54,21 +54,21 @@ class UnitCell(object):
                 self.type = cell_type
                 self.__standard_cell_1D(cell_type,cell_param)
             else:
-                raise ValueError('Unkonw crystal system for 1D space.')
+                raise ValueError('Unkonwn crystal system for 1D space.')
 
         if dim == 2:
             if cell_type in CRYSTAL_SYSTEM2:
                 self.type = cell_type
                 self.__standard_cell_2D(cell_type,cell_param)
             else:
-                raise ValueError('Unkonw crystal system for 2D space.')
+                raise ValueError('Unkonwn crystal system for 2D space.')
 
         if dim == 3:
             if cell_type in CRYSTAL_SYSTEM3:
                 self.type = cell_type
                 self.__standard_cell_3D(cell_type,cell_param)
             else:
-                raise ValueError('Unkonw crystal system for 3D space.')
+                raise ValueError('Unkonwn crystal system for 3D space.')
 
         self.shape = self.__create_shape()
 

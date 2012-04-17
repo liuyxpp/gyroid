@@ -11,7 +11,14 @@ import matplotlib.pyplot as plt
 from matplotlib import colors
 from mayavi import mlab
 
-__all__ = ["render_structure_1d","render_structure_2d","render_structure_3d"]
+__all__ = [
+    "render_structure_1d",
+    "render_structure_2d",
+    "render_structure_3d",
+    "prepare_scft_input"]
+
+def prepare_scft_input(basis,grid,uc):
+    pass
 
 def render_structure_1d(basis,grid,Na,c,
                         save_data=True,data_name="struct1d.mat",

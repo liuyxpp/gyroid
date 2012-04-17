@@ -3,6 +3,15 @@ gyroid Changelog
 
 Here you can see the full list of changes between each gyroid release.
 
+
+Version 0.2
+-----------
+
+* Basis.generate_structure now be replaced by Basis.generate_structure_by_fft. It is much faster.
+* Add two methods in Basis, sabf2fft and fft2sabf
+* Documentaion has been greatly improved.
+
+
 Version 0.2
 -----------
 
