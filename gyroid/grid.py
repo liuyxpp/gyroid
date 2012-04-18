@@ -18,12 +18,14 @@ class Grid(object):
 
     '''
 
-    def __init__(self,ngrid,g):
+    def __init__(self,ngrid,g,lowBZ=-1,highBZ=1):
         ''' Initiator of :class:`Grid`
 
         :param ngrid: contains number of grids in each dimension
         :type ngrid: `numpy.array` with integers
         :param g: a :class:`Group` object
+        :param lowBZ: low bound to find G in BZ, default to -1
+        :param highBZ: high bound to find G in BZ, default to 1
 
         '''
 
@@ -33,6 +35,8 @@ class Grid(object):
                              'not match.')
         self.N = ngrid
         self.shape = g.shape
+        self.lowBZ = lowBZ
+        self.highBZ = highBZ
         self.__create_waves(g)
 
     def to_BZ(self,G):
@@ -131,8 +135,8 @@ class Grid(object):
         return length
 
     def __find_G_in_BZ(self,G):
-        low = -1
-        high = 1
+        low = self.lowBZ
+        high = self.highBZ
         G_try = G
         G_min = G
         Gsq_min = LARGE

@@ -22,7 +22,9 @@ It includes::
 import numpy as np
 from numpy.linalg import inv
 
-EPS = 1e-10
+# To let the G2 comparison pass, EPS should not be too small
+EPS = 1e-6
+
 SMALL = 1e-10
 LARGE = 1e+10
 

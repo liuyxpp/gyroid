@@ -132,8 +132,8 @@ def symmetry_generator2(ITA_number,b,h):
                 Symmetry(2,b,h,R200,t0),
                 Symmetry(2,b,h,Rmxx,t0)
                ]
-    else:
-        raise ValueError('ITA number not supported.')
+
+    raise ValueError('ITA number not supported.')
 
 def symmetry_generator3(ITA_number,b,h):
     ''' Output 3D space point group symmetry generators.

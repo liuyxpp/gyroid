@@ -58,21 +58,21 @@ def test_Basis2():
     b = "Bravais"
     N1,N2 = 128,128
 
-    uc = UnitCell(2,HEXAGONAL,np.array([2.7]))
-    print uc.__dict__
+    uc = UnitCell(2,HEXAGONAL,np.array([1.0]))
+    #print uc.__dict__
     g1 = Group(2,b,uc.shape,"P6mm")
-    print g1.__dict__
-    gd1 = Grid(np.array([16,16]),g1)
-    print gd1.__dict__
+    #print g1.__dict__
+    gd1 = Grid(np.array([128,128]),g1)
+    gd1.lowBZ = -8
+    gd1.highBZ = 8
     bs = Basis(g1,gd1)
-    print bs.__dict__
     #for s in bs.stars:
         #print s.__dict__
     c = np.zeros(bs.N)
     c[0] = 1.0*N1*N2
-    c[1] = 256.0
-    c[2] = 10.0
-    c[3] = 3.0
+    c[1] = 18.0
+    c[2] = 5.0
+    #c[3] = 3.0
     #c[4] = 1.0
     render_structure_2d(bs,gd1,N1,N2,c)
 
@@ -113,8 +113,8 @@ def test_Basis3():
 
 def run_test():
     #test_Basis1()
-    #test_Basis2()
-    test_Basis3()
+    test_Basis2()
+    #test_Basis3()
 
 if __name__ == '__main__':
     run_test()

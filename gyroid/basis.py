@@ -247,6 +247,7 @@ class StarSet(object):
             raise ValueError('Check cancel failed when creating a Star.')
         self.dim = group.dim
         self.Gsq = Gsq
+        #print "Gsq = ",Gsq
         waves = self.__select_waves(grid,Gsq)
         sorted_waves,phases = self.__sort_waves(waves)
         self.__find_stars(group,grid,sorted_waves)
@@ -321,10 +322,14 @@ class StarSet(object):
     def __form_star(self,G,group,grid,waves):
         star_waves = None
         phases = None
+        #print "waves = ",waves
+        #print "G = ",G
         for i in np.arange(group.order):
             Gn = self.__calc_wave(G,group.symm[i].R,group.type)
             # Pseudo-Spectral method
+            #print "Gn = ",Gn
             Gn,Gn2 = grid.to_BZ(Gn)
+            #print "Gn_BZ = ",Gn," Gn^2 = ",Gn2
 
             if index_waves(Gn,waves.T) is not None:
                 if star_waves is None:
@@ -349,6 +354,7 @@ class StarSet(object):
         self.stars = []
         self.N = 0
         rw = waves
+        #print "all waves = ",waves
         while rw is not None:
             G1 = rw[:,0]
             star_waves, phases = self.__form_star(G1,g,grid,rw)

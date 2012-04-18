@@ -131,10 +131,16 @@ def render_structure_2d(basis,grid,Na,Nb,c,
 
     '''
 
+    # If generate_structure_by_fft failed
+    # Give generate_structure a try.
     #struct = basis.generate_structure((Na,Nb),c)
     struct = basis.generate_structure_by_fft((Na,Nb),c,grid)
+
     # For debug only
-    #print basis.fft2sabf(np.fft.fftn(struct),grid)
+    print "Input c: ",c
+    print "c from constructed structure: "
+    print basis.fft2sabf(np.fft.fftn(struct),grid)
+
     rx = np.zeros((Na,Nb))
     ry = np.zeros((Na,Nb))
     for (i,j) in np.ndindex(Na,Nb):
