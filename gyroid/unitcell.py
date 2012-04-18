@@ -122,7 +122,7 @@ class UnitCell(object):
         if cell_type == SQUARE:
             if np.size(cp) < 1:
                 raise ValueError('Square crystal requires 1 parameters.')
-            self.a, self.b = cp[0]
+            self.a, self.b = cp[0], cp[0]
             self.gamma = pi2
         elif cell_type == RECTANGULAR:
             if np.size(cp) < 2:

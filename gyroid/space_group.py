@@ -66,6 +66,7 @@ def symmetry_generator2(ITA_number,b,h):
     '''
 
     I = np.eye(2)
+    t0 = np.zeros(2)
     sI = Symmetry(2,b,h,I,t0)
     # q = 1/4, r = 3/4, s= 1/2, o = 1/8
     # Rotation
@@ -84,7 +85,6 @@ def symmetry_generator2(ITA_number,b,h):
     Rmx0 = np.array([[1., 0.],
                      [0.,-1.]])
     # Translation
-    t0 = np.zeros(2)
     t0s = np.array([.0,.5])
     ts0 = np.array([.5,.0])
     tss = np.array([.5,.5])

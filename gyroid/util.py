@@ -11,14 +11,51 @@ import matplotlib.pyplot as plt
 from matplotlib import colors
 from mayavi import mlab
 
+from .unitcell import UnitCell
+from .group import Group
+from .grid import Grid
+from .basis import Basis
+
 __all__ = [
     "render_structure_1d",
     "render_structure_2d",
     "render_structure_3d",
     "prepare_scft_input"]
 
-def prepare_scft_input(basis,grid,uc):
-    pass
+def prepare_scft_input(dim,grid_num_vec,cryst_system,
+                       cryst_param_vec,sym_group,basis_grid_vec,basis_c,
+                       data_file="field_in.mat",show_img=False,
+                       save_img=False,img_file="field_in.png",
+                       **kwargs):
+    b = "Bravais"
+    uc = UnitCell(dim,cryst_system,cryst_param_vec);
+    g = Group(dim,b,uc.shape,sym_group)
+    gd = Grid(basis_grid_vec,g)
+    bs = Basis(g,gd)
+
+    c = np.zeros(bs.N)
+    N = basis_c.size
+    if N < bs.N:
+        c[0:N] = basis_c
+    else:
+        c = basis_c[0:bs.N]
+
+    if dim == 1:
+        render_structure_1d(bs,gd,grid_num_vec[0],c,
+                            data_name=data_file,save_img=save_img,
+                            show_img=show_img,img_name=img_file,
+                            **kwargs)
+    if dim == 2:
+        render_structure_2d(bs,gd,grid_num_vec[0],grid_num_vec[1],c,
+                            data_name=data_file,save_img=save_img,
+                            show_img=show_img,img_name=img_file,
+                            **kwargs)
+    if dim == 3:
+        render_structure_3d(bs,gd,grid_num_vec[0],grid_num_vec[1],
+                            grid_num_vec[2],c,
+                            data_name=data_file,save_img=save_img,
+                            show_img=show_img,img_name=img_file,
+                            **kwargs)
 
 def render_structure_1d(basis,grid,Na,c,
                         save_data=True,data_name="struct1d.mat",
