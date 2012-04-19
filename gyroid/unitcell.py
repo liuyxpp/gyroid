@@ -141,7 +141,7 @@ class UnitCell(object):
                 raise ValueError('Oblique crystal '
                                  'requires 3 parameters.')
             self.a, self.b = cp[0], cp[1]
-            self.gamma = cp[2]
+            self.gamma = cp[2] * (np.pi / 180.0)
         elif cell_type == DEFAULT:
             self.a, self.b = 1.0, 1.0
             self.gamma = pi2
@@ -179,19 +179,24 @@ class UnitCell(object):
                 raise ValueError('Trigonal crystal '
                                  'requires 3 parameters.')
             self.a, self.b, self.c = cp[0], cp[0], cp[0]
-            self.alpha, self.beta, self.gamma = cp[1], cp[1], cp[1]
+            radian = cp[1] * (np.pi / 180.0)
+            self.alpha, self.beta, self.gamma = radian, radian, radian
         elif cell_type == MONOCLINIC:
             if np.size(cp) < 4:
                 raise ValueError('Monoclinic crystal '
                                  'requires 3 parameters.')
             self.a, self.b, self.c = cp[0], cp[1], cp[2]
-            self.alpha, self.beta, self.gamma = pi2, cp[3], pi2
+            radian = cp[3] * (np.pi / 180.0)
+            self.alpha, self.beta, self.gamma = pi2, radian, pi2
         elif cell_type == TRICLINIC:
             if np.size(cp) < 6:
                 raise ValueError('Triclinic crystal '
                                  'requires 6 parameters.')
             self.a, self.b, self.c = cp[0], cp[1], cp[2]
-            self.alpha, self.beta, self.gamma = cp[3], cp[4], cp[5]
+            radian1 = cp[3] * (np.pi / 180.0)
+            radian2 = cp[4] * (np.pi / 180.0)
+            radian3 = cp[5] * (np.pi / 180.0)
+            self.alpha, self.beta, self.gamma = radian1, radian2, radian3
         elif cell_type == DEFAULT:
             self.a, self.b, self.c = 1.0, 1.0, 1.0
             self.alpha, self.beta, self.gamma = pi2, pi2, pi2
