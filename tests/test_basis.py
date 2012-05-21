@@ -58,13 +58,13 @@ def test_Basis2():
     b = "Bravais"
     N1,N2 = 128,128
 
-    uc = UnitCell(2,HEXAGONAL,np.array([1.0]))
+    uc = UnitCell(2,RECTANGULAR,np.array([1.0,1.2]))
     #print uc.__dict__
-    g1 = Group(2,b,uc.shape,"P6mm")
+    g1 = Group(2,b,uc.shape,"P2mm")
     #print g1.__dict__
-    gd1 = Grid(np.array([128,128]),g1)
-    gd1.lowBZ = -8
-    gd1.highBZ = 8
+    gd1 = Grid(np.array([N1,N2]),g1)
+    #gd1.lowBZ = -8
+    #gd1.highBZ = 8
     bs = Basis(g1,gd1)
     #for s in bs.stars:
         #print s.__dict__

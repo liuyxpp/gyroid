@@ -119,16 +119,20 @@ class Basis(object):
 
         if np.size(real_grid) != self.dim:
             raise ValueError('Dimension of input grid and dimension '
-                             'of Group not match'
+                             'of Group not match '
                              'when generating structure.')
         if np.size(c) == 1:
            cc = c
            c = np.zeros(self.N)
            c.fill(cc)
         elif np.size(c) != self.N:
-            raise ValueError('Number of Bases and number of coefficients'
+            raise ValueError('Number of Bases and number of coefficients '
                              'not match when generating structure.')
 
+        if np.all(abs(real_grid-grid.N) > EPS):
+            raise ValueError('The input grid size other than '
+                             'that in Grid object is current not'
+                             'supported!')
         c_fft = self.sabf2fft(c,real_grid,grid)
         return np.fft.ifftn(c_fft).real
 

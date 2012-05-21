@@ -4,7 +4,15 @@ gyroid Changelog
 Here you can see the full list of changes between each gyroid release.
 
 
-Version 0.2
+Version 0.4
+-----------
+
+* Add more symmetry groups, namely #1-#6 in 2D, and #229 in 3D.
+* Fix a serious bug within basis._select_waves related to G^2 comparison.
+* Other small fixes.
+
+
+Version 0.3
 -----------
 
 * Basis.generate_structure now be replaced by Basis.generate_structure_by_fft. It is much faster.
