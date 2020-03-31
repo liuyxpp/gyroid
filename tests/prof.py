@@ -41,13 +41,13 @@ def test_Basis2():
     b = "Bravais"
     N1,N2 = 64,64
 
-    for i in np.arange(10):
+    for i in np.arange(1):
         uc = UnitCell(2,HEXAGONAL,np.array([2.0]))
         g1 = Group(2,b,uc.shape,"P6mm")
         gd1 = Grid(np.array([N1,N2]),g1)
         bs = Basis(g1,gd1)
         render_structure_2d(bs,gd1,N1,N2,1.0,
-                            save_img=False,show_img=False,save_data=False)
+                            save_img=False,show_img=True,save_data=False)
 
 def test_Basis3():
     b = "Bravais"

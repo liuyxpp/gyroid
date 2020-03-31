@@ -7,4 +7,6 @@ gyroid.egg-info/*
 *.mat
 *.png
 *.bak
+.DS_Store
+.vscode
 

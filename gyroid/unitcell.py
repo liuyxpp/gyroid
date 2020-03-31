@@ -100,6 +100,10 @@ class UnitCell(object):
                           self.b*np.sin(self.gamma),
                           0.0])
             cx = self.c*np.cos(self.beta)
+            # it seems this expression is incorrect
+            # the correct one should be
+            # c * (cos(alpha)-cos(beta)*cos(gamma)) / sin(gamma)
+            # when gamma is not pi/2
             cy = self.c*(np.cos(self.alpha)-
                          np.cos(self.beta)*np.cos(self.gamma))
             cz = np.sqrt(self.c*self.c - cx*cx - cy*cy)
